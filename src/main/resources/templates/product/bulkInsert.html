@@ -1,0 +1,101 @@
+<!-- 製品一括登録画面 -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>製品一括登録</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">製品一括登録</p>
+			</div>
+			
+			<div class="section">
+				<div class="column-flex">
+					<a class="download-btn" th:href="@{/download/productsTable}">ここからテンプレートをダウンロード</a>
+				</div>
+				
+				<form th:object="${uploadForm}" th:action="@{/products/add/bulk}" method="post" enctype="multipart/form-data">
+					<input type="submit" value="ファイルをアップロード"/>
+	        		<input type="file" th:field="*{file}" th:value="*{file}"/> 
+				</form>
+			</div>
+		
+			
+			<div class="header-line">
+				<p class="header-title">登録製品リスト</p>
+			</div>
+			
+			<div class="section">
+				<div class="error-message" th:if="${#fields.hasErrors('${uploadForm}')}">
+					登録内容にエラーがあります。
+				</div>
+	
+				<form class="form" th:if="${not #lists.isEmpty(uploadForm.productList)}" th:action="@{/products/bulk-insert}" th:object="${uploadForm}" method="post">
+					
+					<div class="content">
+						<span>登録結果は下記の通りです。</span>
+						<span style="display:inline-block">修正した後、構成品を続けて登録する場合[次へ]、終了する場合[登録する]を押下してください。</span>
+					</div>
+					
+					<div class="column2-flex-end">
+						<input class="register" type="submit" value="製品を登録する"/>
+						<input class="next" type="submit" value="次へ" th:formaction="@{/products/bulk-insert/next}"/>
+					</div>
+					
+					<table>
+						<thead>
+							<tr>
+								<th>品番</th>
+								<th>品名</th>
+								<th>単価</th>
+								<th>現在個数</th>
+								<th>仕入先ID</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="product,st : *{productList}" class="formRow" th:id="|row${st.index}|">
+								<td class="tw-1 text-center form-item">
+									<input type="text" th:field="*{productList[__${st.index}__].serialNum}" class="productList"
+									th:classappend="${#fields.hasErrors('productList[' + st.index + '].serialNum')}? 'input-error'" />
+								</td>
+								<td class="tw-3 text-center form-item">
+									<input type="text" th:field="*{productList[__${st.index}__].productName}" class="productList"
+									th:classappend="${#fields.hasErrors('productList[' + st.index + '].productName')}? 'input-error'"/>
+								</td>
+								<td class="tw-1 text-center form-item">
+									<input type="number" th:field="*{productList[__${st.index}__].price}" class="productList" step="0.1"
+									th:classappend="${#fields.hasErrors('productList[' + st.index + '].price')}? 'input-error'"/>
+								</td>
+								<td class="tw-1 text-center form-item">
+									<input type="number" th:field="*{productList[__${st.index}__].currentNum}" class="productList"
+									th:classappend="${#fields.hasErrors('productList[' + st.index + '].currentNum')}? 'input-error'"/>
+								</td>
+								<td class="tw-2 text-center form-item">
+									<input type="text" th:field="*{productList[__${st.index}__].clientForm.clientNum}" class="productList"
+									th:classappend="${#fields.hasErrors('productList[' + st.index + '].clientForm.clientNum')}? 'input-error'"/>
+								</td>
+								<td class="text-center form-item">
+									<button type="button" onClick="deleteProductRowForm(this)">削除</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					
+				</form>
+			
+				</div>
+			</div>
+			
+			
+		
+	</body>
+</html>

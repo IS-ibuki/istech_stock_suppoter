@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0 EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.istech.Mapper.ClientMapper">
+	
+	<sql id="findByIdSelectPhrease">
+		<![CDATA[
+	 		SELECT
+				clients.client_id,
+				clients.client_num,
+				clients.client_name,
+				clients.deleted,
+				clients.create_ts,
+				clients.update_ts,
+				orders.order_id,
+				orders.order_num,
+				orders.product_id,
+				orders.type,
+				orders.delivery_num,
+				orders.delivery_date,
+				orders.dead_line,
+				orders.compleated,
+				orders.create_ts AS o_create_ts,
+				orders.update_ts AS o_update_ts,
+				products.serial_num,
+				products.product_name,
+				products.current_num
+			FROM 
+				clients
+			LEFT OUTER JOIN
+				orders
+			ON
+				clients.client_id = orders.client_id
+			LEFT OUTER JOIN
+				products
+			ON
+				orders.product_id = products.product_id
+		]]>
+	</sql>
+
+	
+	<select id="count" resultType="Long">
+		SELECT COUNT(*) FROM clients
+	</select>
+	
+	<select id="findAll" resultMap="clientResultMap">
+ 		SELECT
+			clients.client_id,
+			clients.client_num,
+			clients.client_name,
+			clients.deleted,
+			clients.create_ts,
+			clients.update_ts
+		FROM 
+			clients
+		ORDER BY
+			client_num
+	</select>
+	
+	<select id="findById" resultMap="clientResultMap">
+		<include refid="findByIdSelectPhrease"></include>
+		WHERE
+			clients.client_id = #{clientId}
+		ORDER BY
+			orders.order_num
+	</select>
+
+	<select id="findPageById" resultMap="clientResultMap">
+		<include refid="findByIdSelectPhrease"></include>
+		<where>
+			<if test="orderSearchForm.clientId != null">
+				AND clients.client_id = #{clientId}
+			</if>
+			<if test="orderSearchForm.orderNum != null">
+				AND orders.order_num LIKE CONCAT (#{orderSearchForm.orderNum},'%')
+			</if>
+			<if test="orderSearchForm.serialNum != null">
+				AND orders.serial_num LIKE CONCAT (#{orderSearchForm.serialNum},'%')
+			</if>
+			<if test="!orderSearchForm.deleted">
+				AND NOT orders.deleted
+			</if>
+		</where>
+ 		<choose>
+			<when test="orderSearchForm.sortValue == 0">
+				ORDER BY orders.order_num
+			</when>
+			<when test="orderSearchForm.sortValue == 1">
+				ORDER BY orders.serial_num
+			</when>
+		</choose>
+		<choose>
+			<when test="orderSearchForm.orderValue == 0">
+				ASC
+			</when>
+			<when test="orderSearchForm.orderValue == 1">
+				DESC
+			</when>
+		</choose>		
+	    LIMIT
+            #{pageable.pageSize}
+        OFFSET
+            #{pageable.offset}		
+	</select>
+
+	<select id="findByClientNum" resultMap="clientResultMap">
+ 		SELECT
+			clients.client_id,
+			clients.client_num,
+			clients.client_name,
+			clients.create_ts,
+			clients.update_ts
+		FROM 
+			clients
+		WHERE
+			client_num = #{clientNum}
+	</select>
+	
+	<delete id="deleteClient" parameterType="String">
+		DELETE FROM clients
+		WHERE
+			client_id = #{clientId}
+	</delete>
+	
+	<insert id="insertClient" parameterType="com.app.istech.Model.Client">
+		INSERT INTO clients (
+			client_num,
+			client_name
+			) 
+		VALUES (
+			#{clientNum},
+			#{clientName}
+			);
+	</insert>
+	
+	<update id="updateClient">
+		UPDATE 
+			clients
+		SET
+			client_name = #{clientName},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			client_id = #{clientId}
+	</update>
+	
+	<update id="updateDeletedFlg" parameterType="com.app.istech.Model.Client">
+		UPDATE 
+			clients
+		SET
+			deleted = #{deleted},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			client_id = #{clientId}
+	</update>
+	
+	<resultMap id="clientResultMap" type="com.app.istech.Model.Client">
+		<id property="clientId" column="client_id"/>
+		<result property="clientNum" column="client_num"/>
+		<result property="clientName" column="client_name"/>
+		<result property="deleted" column="deleted"/>
+		<result property="createTs" column="create_ts"/>
+		<result property="updateTs" column="update_ts"/>
+		<collection property="orders" javaType="ArrayList" ofType="com.app.istech.Model.Order">
+			<id property="orderId" column="order_id"/>
+			<result property="deliveryDate" column="delivery_date"/>
+			<result property="deadLine" column="dead_line"/>
+			<result property="type" column="type"/>
+			<result property="deliveryNum" column="delivery_num"/>
+			<result property="compleated" column="compleated"/>			
+			<result property="orderNum" column="order_num" />
+			<result property="createTs" column="o_create_ts"/>
+			<result property="updateTs" column="o_update_ts"/>
+			<association property="product" javaType="com.app.istech.Model.Product">			
+				<id property="productId" column="product_id"/>
+				<result property="serialNum" column="serial_num"/>
+				<result property="price" column="price"/>
+				<result property="productName" column="product_name"/>
+				<result property="currentNum" column="current_num"/>
+				<result property="supplierId" column="supplier_id"/>
+			</association>
+		</collection>
+	</resultMap>
+	
+</mapper>

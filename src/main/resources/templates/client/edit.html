@@ -1,0 +1,45 @@
+<!-- 顧客一覧画面 -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>顧客データ編集</title>
+</head>
+<header>
+	<h1>header</h1>
+</header>
+
+	<body>
+	
+		<div layout:fragment="contents">
+			<div class="header-line">
+				<p class="header-title">顧客編集</p>
+			</div>
+			
+			<form class="form-section" th:object="${clientForm}" th:action="@{/clients/{clientId}/update (clientId=*{clientId})}" method="POST">
+				
+				<table class="input-form-table">
+					
+					<tr>
+						<th>顧客ID</th>
+						<td><input type="text" th:field="*{clientNum}"/></td>
+					</tr>
+					<tr>
+						<th>顧客名</th>
+						<td><input type="text" th:field="*{clientName}"/></td>
+					
+					</tr>
+				</table>
+		
+				<div class="column-flex-end">
+					<a class="gray-btn-inline" th:href="@{/clients/{clientId}(clientId=${clientId})}">顧客詳細へ戻る</a>
+					<input type="submit" value="登録"/>
+				</div>
+			</form>
+		
+		</div>
+		
+	</body>
+</html>

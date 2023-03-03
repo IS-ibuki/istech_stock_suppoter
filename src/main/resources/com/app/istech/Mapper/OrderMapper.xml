@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0 EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.istech.Mapper.OrderMapper">
+	
+	<sql id="findAllSelectPhrase">
+		<![CDATA[
+			SELECT
+				orders.order_id,
+				orders.order_num,
+				orders.type,
+				orders.delivery_num,
+				orders.delivery_date,
+				orders.dead_line,
+				orders.compleated,
+				orders.deleted,
+				orders.client_id,
+				orders.create_ts,
+				orders.update_ts,
+				products.serial_num,
+				products.price,
+	 			clients.client_id,
+	 			clients.client_name
+			FROM 
+				orders
+			INNER JOIN
+				clients 
+			ON
+				clients.client_id = orders.client_id
+			INNER JOIN
+				products
+			ON
+				products.product_id = orders.product_id
+		]]>
+	</sql>
+
+	<sql id="findBySelectPhrase">
+		<![CDATA[
+	 		SELECT
+				orders.order_id,
+				orders.order_num,
+				orders.type,
+				orders.delivery_num,
+				orders.delivery_date,
+				orders.dead_line,
+				orders.compleated,
+				orders.client_id,
+				orders.create_ts,
+				orders.update_ts,
+	 			clients.client_num,
+	 			clients.client_name,
+				products.product_id,
+				products.serial_num,
+				products.product_name,
+				products.current_num,
+				products.price,
+				products.supplier_id,
+				products.deleted,
+				supplier.client_num AS s_client_num,
+				supplier.client_name AS s_client_name
+			FROM 
+				orders 
+			INNER JOIN
+				clients 
+			ON
+				clients.client_id = orders.client_id
+			INNER JOIN
+				products
+			ON
+				products.product_id = orders.product_id
+			INNER JOIN
+				clients AS supplier
+			ON
+				products.supplier_id = supplier.client_id
+		]]>
+	</sql>
+	
+	
+	<select id="count" resultType="Long">
+		SELECT
+			COUNT(*)
+		FROM
+			orders
+		INNER JOIN
+			clients 
+		ON
+			clients.client_id = orders.client_id
+		INNER JOIN
+			products
+		ON
+			products.product_id = orders.product_id
+		<where>
+			<if test="orderSearchForm.clientId != null">
+				AND clients.client_id = #{orderSearchForm.clientId}
+			</if>
+			<if test="orderSearchForm.orderNum != null">
+				AND orders.order_num LIKE CONCAT (#{orderSearchForm.orderNum},'%')
+			</if>
+			<if test="orderSearchForm.serialNum != null">
+				AND products.serial_num LIKE CONCAT (#{orderSearchForm.serialNum},'%')
+			</if>
+			<if test="!orderSearchForm.deleted">
+				AND NOT orders.deleted
+			</if>
+		</where>		
+	</select>
+	
+	<select id="findAll" resultMap="orderResultMap">
+ 		<include refid="findAllSelectPhrase"></include>
+ 		<where>
+			<if test="orderSearchForm.clientId != null">
+				AND orders.client_id =  #{orderSearchForm.clientId}
+			</if>
+			<if test="orderSearchForm.orderNum != null">
+				AND orders.order_num LIKE CONCAT (#{orderSearchForm.orderNum},'%')
+			</if>
+			<if test="orderSearchForm.serialNum != null">
+				AND products.serial_num LIKE CONCAT (#{orderSearchForm.serialNum},'%')
+			</if>
+			<if test="!orderSearchForm.deleted">
+				AND NOT orders.deleted
+			</if>
+		</where>
+ 		<choose>
+			<when test="orderSearchForm.sortValue == 0">
+				ORDER BY orders.order_num
+			</when>
+			<when test="orderSearchForm.sortValue == 1">
+				ORDER BY products.serial_num
+			</when>
+		</choose>
+		<choose>
+			<when test="orderSearchForm.orderValue == 0">
+				ASC
+			</when>
+			<when test="orderSearchForm.orderValue == 1">
+				DESC
+			</when>
+		</choose>
+	</select>
+
+	<select id="findAllBySearchForm" resultMap="orderResultMap">
+ 		<include refid="findAllSelectPhrase"></include> 		
+		<where>
+			<if test="orderSearchForm.orderNum != null">
+				AND orders.order_num LIKE CONCAT (#{orderSearchForm.orderNum},'%')
+			</if>
+			<if test="orderSearchForm.serialNum != null">
+				AND orders.serial_num LIKE CONCAT (#{orderSearchForm.serialNum},'%')
+			</if>
+			<if test="!orderSearchForm.deleted">
+				AND NOT orders.deleted
+			</if>
+		</where>
+ 		<choose>
+			<when test="orderSearchForm.sortValue == 0">
+				ORDER BY orders.order_num
+			</when>
+			<when test="orderSearchForm.sortValue == 1">
+				ORDER BY orders.serial_num
+			</when>
+		</choose>
+		<choose>
+			<when test="orderSearchForm.orderValue == 0">
+				ASC
+			</when>
+			<when test="orderSearchForm.orderValue == 1">
+				DESC
+			</when>
+		</choose>		
+	</select>
+	
+	<select id="findById" resultMap="orderResultMap">
+ 		<include refid="findBySelectPhrase"></include>
+		WHERE
+			order_id = #{orderId}
+	</select>
+
+	<select id="findByOrderNum" resultMap="orderResultMap">
+ 		<include refid="findBySelectPhrase"></include>
+		WHERE
+			order_num = #{orderNum}
+	</select>
+	
+	<insert id="insertOrder" parameterType="com.app.istech.Model.Order">
+		INSERT INTO orders (
+			order_num,
+			product_id,
+			delivery_date,
+			dead_line,
+			type,
+			delivery_num,
+			compleated,
+			client_id
+			) 
+		VALUES (
+			#{orderNum},
+			#{product.productId},
+			#{deliveryDate},
+			#{deadLine},
+			#{type},
+			#{deliveryNum},
+			#{compleated},
+			#{client.clientId}
+			)
+	</insert>
+	
+	<delete id="deleteOrder" parameterType="String">
+		DELETE FROM
+			orders
+		WHERE
+			order_id = #{orderId}
+	</delete>
+	
+	<update id="updateOrder" parameterType="com.app.istech.Model.Order">
+		UPDATE 
+			orders
+		SET
+			order_num = #{orderNum},
+			delivery_num = #{deliveryNum},
+			delivery_date = #{deliveryDate},
+			dead_line = #{deadLine},
+			type = #{type},
+			compleated = #{compleated},
+			deleted = #{deleted},
+			product_id = #{product.productId},
+			client_id = #{client.clientId},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			order_id = #{orderId}
+	</update>
+	
+	<update id="updateDeletedFlg" parameterType="com.app.istech.Model.Order">
+		UPDATE 
+			orders
+		SET
+			deleted = #{deleted},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			order_id = #{orderId}
+	</update>
+	
+	<resultMap id="orderResultMap" type="com.app.istech.Model.Order">
+		<id property="orderId" column="order_id"/>
+		<result property="deliveryDate" column="delivery_date"/>
+		<result property="deadLine" column="dead_line"/>
+		<result property="type" column="type"/>
+		<result property="deliveryNum" column="delivery_num"/>
+		<result property="compleated" column="compleated"/>
+		<result property="clientId" column="client_id"/>				
+		<result property="orderNum" column="order_num" />
+		<result property="createTs" column="create_ts"/>
+		<result property="updateTs" column="update_ts"/>
+		<result property="deleted" column="deleted"/>
+		<association property="product" javaType="com.app.istech.Model.Product">			
+			<id property="productId" column="product_id"/>
+			<result property="price" column="price"/>
+			<result property="serialNum" column="serial_num"/>
+			<result property="productName" column="product_name"/>
+			<result property="currentNum" column="current_num"/>
+			<result property="deleted" column="deleted"/>
+			<result property="supplierId" column="supplier_id"/>
+			<association property="client" javaType="com.app.istech.Model.Client">
+				<id property="clientId" column="s_client_id"/>
+				<result property="clientNum" column="s_client_num"/>
+				<result property="clientName" column="s_client_name"/>
+			</association>
+		</association>
+		<association property="client" javaType="com.app.istech.Model.Client">
+			<id property="clientId" column="client_id"/>
+			<result property="clientNum" column="client_num"/>
+			<result property="clientName" column="client_name"/>
+		</association>
+	</resultMap>
+	
+</mapper>

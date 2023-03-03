@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0 EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.istech.Mapper.ProductMapper">
+	
+	<sql id="findAllSelectPhrase">
+		<![CDATA[
+			SELECT
+				products.product_id,
+				products.serial_num,
+				products.deleted,
+				products.product_name,
+				products.price,
+				products.current_num,
+				products.supplier_id,
+				products.create_ts,
+				products.update_ts,
+				clients.client_num
+			FROM 
+				products
+			INNER JOIN
+				clients
+			ON
+				products.supplier_id = clients.client_id
+		]]>
+	</sql>
+	
+	
+	<sql id="findBySelectPhrase">
+		<![CDATA[
+		    SELECT
+				products.product_id,
+				products.serial_num,
+				products.product_name,
+				products.current_num,
+				products.price,
+				products.deleted,
+				products.create_ts,
+				products.update_ts,
+				clients.client_id,
+				clients.client_name,
+				clients.client_num,
+				clients.deleted,
+				compositions.parent_id,
+				compositions.child_id,
+				compositions.quantity,
+				compositions.create_ts AS cc_craete_ts,
+				compositions.update_ts AS cc_update_ts,
+				child.product_id AS c_product_id,
+				child.serial_num AS c_serial_num,
+				child.product_name AS c_product_name,
+				child.price AS c_price,
+				child_supplier.client_num AS c_client_num,
+				child_supplier.client_name AS c_client_name 
+			FROM
+				products
+			INNER JOIN
+				clients
+			ON
+				products.supplier_id = clients.client_id
+			LEFT OUTER JOIN 
+				compositions
+			ON
+				products.product_id = compositions.parent_id
+			LEFT OUTER JOIN
+				products AS child
+			ON
+				compositions.child_id = child.product_id
+			LEFT OUTER JOIN
+				clients AS child_supplier
+			ON
+				child.supplier_id = child_supplier.client_id
+		    ]]>
+	</sql>
+	
+	<sql id="upsertByProductUniqueKey">
+		<![CDATA[
+		ON CONFLICT ON CONSTRAINT products_un
+		DO UPDATE SET 
+			serial_num = #{serialNum},
+			product_name  = #{productName},
+			price = #{price},
+			current_num = #{currentNum},
+			supplier_id = #{client.clientId}
+		]]>
+	</sql>
+	
+	<select id="count" resultType="Long">
+		SELECT 
+			COUNT(*) 
+		FROM
+			products
+		INNER JOIN
+			clients
+		ON
+			products.supplier_id = clients.client_id
+		<where>
+			<if test="productSearchForm.serialNum != null">
+				AND serial_num LIKE CONCAT (#{productSearchForm.serialNum},'%')
+			</if>
+			<if test="productSearchForm.productName != null">
+				AND product_name LIKE CONCAT (#{productSearchForm.productName},'%')
+			</if>
+			<if test="productSearchForm.clientNum != null">
+				AND client_num LIKE CONCAT (#{productSearchForm.clientNum},'%')
+			</if>
+			<if test="!productSearchForm.deleted">
+				AND NOT products.deleted
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="findAll" resultMap="productResultMap">
+ 		<include refid="findAllSelectPhrase"></include>
+		ORDER BY
+			serial_num
+	</select>
+
+
+	<select id="findAllBySearchForm" resultMap="productResultMap">
+ 		<include refid="findAllSelectPhrase"></include>
+		
+		<where>
+			<if test="productSearchForm.serialNum != null">
+				AND serial_num LIKE CONCAT (#{productSearchForm.serialNum},'%')
+			</if>
+			<if test="productSearchForm.productName != null">
+				AND product_name LIKE CONCAT (#{productSearchForm.productName},'%')
+			</if>
+			<if test="productSearchForm.clientNum != null">
+				AND client_num LIKE CONCAT (#{productSearchForm.clientNum},'%')
+			</if>
+			<if test="!productSearchForm.deleted">
+				AND NOT products.deleted
+			</if>
+		</where>
+		
+		<choose>
+			<when test="productSearchForm.sortValue == 0">
+				ORDER BY serial_num
+			</when>
+			<when test="productSearchForm.sortValue == 1">
+				ORDER BY product_name
+			</when>
+			<when test="productSearchForm.sortValue == 2">
+				ORDER BY current_num
+			</when>
+			<when test="productSearchForm.sortValue == 3">
+				ORDER BY client_num
+			</when>
+		</choose>
+		<choose>
+			<when test="productSearchForm.orderValue == 0">
+				ASC
+			</when>
+			<when test="productSearchForm.orderValue == 1">
+				DESC
+			</when>
+		</choose>
+	</select>
+	
+	
+	<select id="findById" resultMap="productCompositionResultMap">
+		<include refid="findBySelectPhrase"></include>
+		WHERE
+			products.product_id = #{productId}
+		ORDER BY
+			compositions.child_id
+	</select>
+
+	<select id="findPageById" resultMap="productCompositionResultMap">
+		<include refid="findBySelectPhrase"></include>
+
+		<where>
+			<if test="compositionSearchForm.parentId != null">
+				AND products.product_id = #{compositionSearchForm.parentId}
+			</if>
+			<if test="compositionSearchForm.serialNum != null">
+				AND child.serial_num LIKE CONCAT (#{compositionSearchForm.serialNum},'%')
+			</if>
+			<if test="compositionSearchForm.productName != null">
+				AND child.product_name LIKE CONCAT (#{compositionSearchForm.productName},'%')
+			</if>
+			<if test="compositionSearchForm.clientNum != null">
+				AND child_supplier.client_num LIKE CONCAT (#{compositionSearchForm.clientNum},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="compositionSearchForm.sortValue == 0">
+				ORDER BY child.serial_num
+			</when>
+			<when test="compositionSearchForm.sortValue == 1">
+				ORDER BY child.product_name
+			</when>
+			<when test="compositionSearchForm.sortValue == 2">
+				ORDER BY compositions.quantity
+			</when>
+			<when test="compositionSearchForm.sortValue == 3">
+				ORDER BY child_supplier.client_num
+			</when>
+		</choose>
+		<choose>
+			<when test="compositionSearchForm.orderValue == 0">
+				ASC
+			</when>
+			<when test="compositionSearchForm.orderValue == 1">
+				DESC
+			</when>
+		</choose>
+		LIMIT #{pageable.pageSize}
+		OFFSET #{pageable.offset}
+	</select>
+	
+	<select id="findBySerialNum" resultMap="productResultMap">
+ 		<include refid="findAllSelectPhrase"></include>
+		WHERE
+			serial_num = #{serialNum}
+	</select>
+
+	<select id="findBySerialNumNot" resultMap="productCompositionResultMap">
+ 		<include refid="findAllSelectPhrase"></include>
+		WHERE
+			NOT serial_num = #{serialNum}
+	</select>
+	
+	<update id="updateProduct" parameterType="com.app.istech.Model.Product">
+		UPDATE 
+			products
+		SET
+			serial_num = #{serialNum},
+			product_name = #{productName},
+			price = #{price},
+			current_num = #{currentNum},
+			supplier_id = #{client.clientId},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			product_id = #{productId}
+	</update>
+
+	<update id="updateDeletedFlg" parameterType="com.app.istech.Model.Product">
+		UPDATE 
+			products
+		SET
+			deleted = #{deleted},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			product_id = #{productId}
+	</update>
+
+	<update id="updateCurrentNum" parameterType="com.app.istech.Model.Product">
+		UPDATE 
+			products
+		SET
+			current_num = #{currentNum},
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			product_id = #{productId}		
+	</update>
+
+	<update id="updateChildCurrentNum" parameterType="com.app.istech.Model.Product">
+		<foreach collection="productList" item="item" separator=";">
+			UPDATE 
+				products
+			SET
+				current_num = #{item.currentNum},
+				update_ts = CURRENT_TIMESTAMP
+			WHERE
+				product_id = #{item.productId}
+		</foreach>		
+	</update>
+	
+	
+	<delete id="deleteProduct" parameterType="String">
+		DELETE FROM 
+			products
+		WHERE
+			product_id = #{productId}
+	</delete>
+	
+	
+	<insert id="insertProduct" parameterType="com.app.istech.Model.Product">
+		INSERT INTO products (
+			serial_num,
+			product_name,
+			price,
+			current_num,
+			supplier_id
+		)
+		VALUES (
+			#{serialNum},
+			#{productName},
+			#{price},
+			#{currentNum},
+			#{client.clientId}
+		)
+	</insert>
+
+	<insert id="bulkInsertProduct" parameterType="com.app.istech.Model.Product">
+		INSERT INTO products (
+			serial_num,
+			product_name,
+			price,
+			current_num,
+			supplier_id
+			)
+		VALUES
+		<foreach collection="productList" item="item" separator=",">
+			(			
+			#{item.serialNum},
+			#{item.productName},
+			#{item.price},
+			#{item.currentNum},
+			#{item.client.clientId}
+			)
+		</foreach>
+	</insert>
+	
+	<resultMap id="productCompositionResultMap" type="com.app.istech.Model.Product">
+		<id property="productId" column="product_id"/>
+		<result property="serialNum" column="serial_num"/>
+		<result property="deleted" column="deleted"/>
+		<result property="price" column="price"/>
+		<result property="productName" column="product_name"/>
+		<result property="currentNum" column="current_num"/>
+		<result property="supplierId" column="supplier_id"/>
+		<result property="createTs" column="create_ts"/>
+		<result property="updateTs" column="update_ts"/>
+		<association property="client" javaType="com.app.istech.Model.Client">
+			<id property="clientId" column="client_id"/>
+			<result property="clientName" column="client_name"/>
+			<result property="clientNum" column="client_num"/>
+			<result property="deleted" column="deleted"/>
+		</association>
+		<collection property="childs" javaType="ArrayList" ofType="com.app.istech.Model.Composition">
+			<id property="parentId" column="parent_id"/>
+			<id property="childId" column="child_id"/>
+			<result property="quantity" column="quantity"/>
+			<result property="createTs" column="cc_create_ts"/>
+			<result property="updateTs" column="cc_update_ts"/>
+			<association property="child" javaType="com.app.istech.Model.Product">
+				<result property="productId" column="c_product_id"/>
+				<result property="serialNum" column="c_serial_num"/>
+				<result property="productName" column="c_product_name"/>
+				<result property="price" column="c_price"/>
+				<result property="supplierId" column="c_supplier_id"/>
+				<result property="productName" column="c_product_name"/>
+				<result property="currentNum" column="c_current_num"/>
+				<association property="client" javaType="com.app.istech.Model.Client">
+					<id property="clientId" column="c_client_id"/>
+					<result property="clientName" column="c_client_name"/>
+					<result property="clientNum" column="c_client_num"/>
+					<result property="deleted" column="c_deleted"/>
+				</association>
+			</association>
+		</collection>
+	</resultMap>
+	
+	<resultMap id="productResultMap" type="com.app.istech.Model.Product">
+		<id property="productId" column="product_id"/>
+		<result property="serialNum" column="serial_num"/>
+		<result property="deleted" column="deleted"/>
+		<result property="price" column="price"/>
+		<result property="currentNum" column="current_num"/>
+		<result property="productName" column="product_name"/>
+		<result property="supplierId" column="supplier_id"/>
+		<result property="createTs" column="create_ts"/>
+		<result property="updateTs" column="update_ts"/>
+		<association property="client" javaType="com.app.istech.Model.Client">
+			<id property="clientId" column="client_id"/>
+			<result property="clientName" column="client_name"/>
+			<result property="clientNum" column="client_num"/>
+			<result property="deleted" column="deleted"/>
+		</association>
+	</resultMap>
+	
+</mapper>

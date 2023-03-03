@@ -1,0 +1,24 @@
+<!-- 構成品一括登録画面 -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>エラー</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			<div class="error-content">
+				<div class="error-common-message">予期せぬエラーです。再度やり直してください。</div>
+				<a th:href="@{/products}" class="gray-btn-inline text-center">ホームへ戻る</a>
+			</div>
+			
+			<div>
+				<img th:src="@{/img/noimage1.png}"/>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,136 @@
+<!-- 製品一覧画面 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/base}">
+<head>
+<title>注文書作成</title>
+</head>
+
+<body>
+	<div layout:fragment="contents">
+		
+		<div class="header-line">
+			<p class="header-title">親製品情報</p>
+		</div>
+		
+		<div class="section">
+			<table th:object="${product}" class="parent-table">
+				<thead class="parent-thead">
+					<tr>
+						<th>親品番</th>
+						<th>親品名</th>
+						<th>現在個数</th>
+						<th>親仕入先ID</th>
+						<th>親仕入先名</th>
+					</tr>
+				</thead>
+
+				<tbody class="parent-tbody" th:classappend="*{deleted}? 'deleted'">
+					<tr>
+						<td class="text-center" th:text="*{serialNum}"></td>
+						<td class="tw-2" th:text="*{productName}"></td>
+						<td class="tw-mini text-center" th:text="*{currentNum}"></td>
+						<td class="text-center" th:text="*{client.clientNum}"></td>
+						<td class="text-center" th:text="*{client.clientName}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="column-flex-end">
+				<a class="blue-btn-inline"
+					th:href="@{/products/{productId}/edit(productId=${product.productId})}">製品情報を編集</a>
+				
+				<th:block th:if="${product.deleted}">
+					<a class="green-btn-inline" th:href="@{/products/{productId}/delete(productId=${product.productId})}">製品情報を表示</a>
+				</th:block>
+				<th:block th:if="${!product.deleted}">
+					<a class="red-btn-inline" th:href="@{/products/{productId}/delete(productId=${product.productId})}">製品情報を非表示</a>
+				</th:block>
+			</div>
+		</div>
+
+		<div class="header-line">
+			<p class="header-title">構成要素</p>
+		</div>
+		
+		
+		<div class="section">
+			<th:block th:insert="common/fragment :: searchBox(value='composition')">
+			</th:block>
+			
+			<div class="failed" th:if="${status != null}">
+					<span class="close" th:onclick="messagesDeactive(this)"></span>
+					<span>製品の登録に成功しました</span>
+			</div>
+			
+			
+			<div th:if="${error != null}" class="error-message">
+				子製品の登録に失敗しました。
+			</div>
+			
+			<form id="addCompositionForm" class="composition-form" 
+				th:action="@{/compositions/{parentId}/create(parentId=${product.productId})}" 
+				th:object="${compositionFormList}" method="post">	
+				
+				<table class="composition-form-table">
+					<thead>
+						<tr>
+							<th class="serial-num">子品番</th>
+							<th class="quantity">子入数</th>
+							<th class="delete"></th>
+						</tr>
+					</thead>
+					<tbody id="formRows">
+					</tbody>
+				</table>
+				
+				<div class="column-flex-end">
+					<input type="submit" value="登録"/>
+				</div>
+			</form>
+			
+			<th:block th:if="${not #lists.isEmpty(page.content)}">
+				<table>
+					<thead>
+						<tr>
+							<th>子品番</th>
+							<th>子品名</th>
+							<th>子入数</th>
+							<th>単価</th>
+							<th>子仕入先</th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+		
+					<tbody th:each="child : ${page}" th:object="${child}">
+						<tr>
+							<td>
+								<a th:href="@{/products/{productId}(productId=*{child.productId})}"  
+									th:text="*{child.serialNum}"></a>
+							</td>
+							<td th:text="*{child.productName}"></td>
+							<td class="text-center tw-mini" th:text="*{quantity}"></td>
+							<td class="text-center tw-mini" th:text="*{child.price}"></td>
+							<td th:text="*{child.client.clientNum}"></td>
+							<td><a th:href="@{/compositions/{childId}/edit(childId = *{childId},parentId=*{parentId})}"><button>変更</button></a></td>
+							<td><a th:href="@{/compositions/{childId}/delete(childId = *{childId},parentId=*{parentId})}"><button>削除</button></a></td>
+						</tr>
+					</tbody>
+					
+				</table>
+				<th:block th:insert="common/fragment :: detailPagenation(id=${product.productId}, value='products')">
+				</th:block>
+			</th:block>
+	
+			<div class="text-center" th:if="${#lists.isEmpty(product.childs)}">子要素が存在しません</div>
+
+		</div>
+		<script th:inline="javascript">
+				const serialNum = /*[[${product.serialNum}]]*/"serialNum";
+		</script>
+
+	</div>
+</body>
+</html>

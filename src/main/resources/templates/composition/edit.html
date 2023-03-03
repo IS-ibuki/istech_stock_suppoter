@@ -1,0 +1,50 @@
+<!-- 構成品編集画面 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/base}">
+<head>
+<title>構成品マスタ編集</title>
+</head>
+
+<body>
+	<div layout:fragment="contents">
+
+		<div class="header-line">
+			<p class="header-title">構成品編集</p>
+		</div>
+
+		<form class="form-section" th:object="${compositionForm}"
+			th:action="@{/compositions/{childId}/update(childId=*{child.productId},parentId=*{parent.productId})}" method="POST">
+			
+			<input type="hidden" th:field="*{parent.productId}"/>
+			<table class="input-form-table">
+					<input type="hidden" th:field="*{parent.productId}">
+					<tr>
+						<th>子品番</th>
+						<td>
+							<input type="text" th:field="*{child.serialNum}" list="key" autocapitalize="off"
+								th:classappend="*{#fields.hasErrors('child.serialNum')}? 'input-error'"/>
+							<div th:if="${#fields.hasErrors('child.serialNum')}" 
+									th:errors="*{child.serialNum}" style="color: red"></div>
+							<datalist id="key">
+								<option th:each="product :*{productList}" th:value="${product.serialNum}" th:text="${product.productName}"></option>
+							</datalist>
+						</td>
+					</tr>
+					<tr>
+						<th>子入数</th>
+						<td><input type="number" th:field="*{quantity}"/></td>
+					</tr>
+				</table>
+			
+			<div class="column-flex-end">
+				<a class="gray-btn-inline"
+					th:href="@{/products/{productId}(productId=*{parent.productId})}">製品情報へ戻る</a>
+				<input type="submit" value="更新する">
+			</div>
+		</form>
+	</div>
+
+</body>
+</html>

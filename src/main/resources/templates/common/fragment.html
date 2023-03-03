@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body>
+	
+	<!-- 検索ボックス -->
+	<th:block th:fragment="searchBox(value)">
+		
+		<th:block th:if="${value == 'product'}">
+			<div class="search-box">
+				<a class="add-btn" th:href="@{/products/add}">＋ 製品を登録する</a>			
+				<form class="search-form" th:action="@{/products}" th:object="${productSearchForm}">
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>品番</label>
+							<input type="text" th:field="*{serialNum}" placeholder="品番を入力"></input>
+						</span>
+						<span class="search-form-item">
+							<label>品名</label>
+							<input type="text" th:field="*{productName}" placeholder="品名を入力"></input>
+						</span>
+					</div>
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>仕入先コード</label>
+							<input type="text" th:field="*{clientNum}" placeholder="仕入先コードを入力"></input>
+						</span>
+						<span class="search-form-item">
+							<label for="deleted">
+								<input type="checkbox" th:field="*{deleted}" id="deleted">削除データを含む
+							</label>
+						</span>
+						<div class="select-item">
+							<select th:field="*{sortValue}">
+								<option th:each="item:*{sortItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<select th:field="*{orderValue}">
+								<option th:each="item:*{orderItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<input type="submit" value="検索" />
+						</div>
+					</div>
+				</form>			
+			</div>
+		</th:block>
+
+		<th:block th:if="${value == 'order'}">
+			<div class="search-box">
+				<a class="add-btn" th:href="@{/orders/add}">＋ 注文書を登録する</a>	
+				<form class="search-form" th:action="@{/orders}" th:object="${orderSearchForm}">
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>注文番号</label>
+							<input type="text" th:field="*{orderNum}" placeholder="注文番号を入力"></input>
+						</span>
+						<span class="search-form-item">
+							<label for="deleted">
+								<input type="checkbox" th:field="*{deleted}" id="deleted">削除データを含む
+							</label>
+						</span>
+					</div>
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>品番</label>
+							<input type="text" th:field="*{serialNum}" placeholder="品番を入力"></input>
+						</span>						
+						<div class="select-item">
+							<select th:field="*{sortValue}">
+								<option th:each="item:*{sortItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<select th:field="*{orderValue}">
+								<option th:each="item:*{orderItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<input type="submit" value="検索" />
+						</div>
+					</div>
+				</form>	
+			</div>
+		</th:block>
+
+		<th:block th:if="${value == 'clientDetail'}">
+			<div class="search-box">
+				<a class="add-btn" th:href="@{/orders/add}">＋ 注文書を登録する</a>	
+				<form class="search-form" th:action="@{/clients/{clientId}(clientId=*{clientId})}" th:object="${orderSearchForm}">
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>注文番号</label>
+							<input type="text" th:field="*{orderNum}" placeholder="注文番号を入力"></input>
+						</span>
+						<span class="search-form-item">
+							<label for="deleted">
+								<input type="checkbox" th:field="*{deleted}" id="deleted">削除データを含む
+							</label>
+						</span>
+					</div>
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>品番</label>
+							<input type="text" th:field="*{serialNum}" placeholder="品番を入力"></input>
+						</span>						
+						<div class="select-item">
+							<select th:field="*{sortValue}">
+								<option th:each="item:*{sortItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<select th:field="*{orderValue}">
+								<option th:each="item:*{orderItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<input type="submit" value="検索" />
+						</div>
+					</div>
+				</form>	
+			</div>
+		</th:block>
+
+		<th:block th:if="${value == 'composition'}">
+			<div class="search-box">
+				<a class="add-btn" href="#" th:onclick="addCompositionRowForm()">＋ 子製品を登録する</a>
+				<form class="search-form" th:action="@{/products/{productId}(productId = ${product.productId})}" th:object="${compositionSearchForm}">
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>子品番</label>
+							<input type="text" th:field="*{serialNum}" placeholder="品番を入力"></input>
+						</span>
+						<span class="search-form-item">
+							<label>子品名</label>
+							<input type="text" th:field="*{productName}" placeholder="品名を入力"></input>
+						</span>
+					</div>
+					<div class="search-form-wrapper">
+						<span class="search-form-item">
+							<label>仕入先コード</label>
+							<input type="text" th:field="*{clientNum}" placeholder="仕入先コードを入力"></input>
+						</span>
+						<div class="select-item">
+							<select th:field="*{sortValue}">
+								<option th:each="item:*{sortItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<select th:field="*{orderValue}">
+								<option th:each="item:*{orderItems}" th:value="${item.value}"
+								 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+							</select>
+							<input type="submit" value="検索" />
+						</div>
+					</div>
+				</form>	
+			</div>
+		</th:block>
+
+		<th:block th:if="${value == 'client'}">
+			<div class="search-box">
+				<a class="add-btn" th:href="@{/clients/add}" th:onclick="addRowForm()">＋ 顧客を登録する</a>
+			</div>
+		</th:block>
+		
+	</th:block>
+
+	<!-- ページネーション -->
+	<th:block th:fragment="pagenation(value)">
+	
+		<div th:if="${page.totalPages > 0}">
+			<nav class="nav-pagenation">
+				<ul class="page-item">
+					<li th:if="${page.hasPrevious()}" class="page-item">
+					<a class="page-link" th:href="@{'/' + ${value} (page=${page.number - 1})}">前へ</a></li>
+
+					<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}"
+						th:switch="${page.number}">
+						<li th:case="${i}" class="page-item active"><a
+							class="page-link" th:text="${i + 1}"> </a></li>
+						<li th:case="*" class="page-item"><a class="page-link"
+							th:href="@{/{value} (value=${value},page=${i})}" th:text="${i + 1}"> </a></li>
+					</th:block>
+
+					<!-- 次へ -->
+					<li th:if="${page.hasNext()}" class="page-item"><a
+						class="page-link" th:href="@{'/' + ${value} (page=${page.number + 1})}"> 次へ
+					</a></li>
+
+				</ul>
+			</nav>
+		</div>
+	</th:block>
+
+
+	<th:block th:fragment="detailPagenation(id,value)">
+		
+		<div th:if="${page.totalPages > 0}">
+			<nav class="nav-pagenation">
+				<ul class="page-item">
+					<li th:if="${page.hasPrevious()}" class="page-item">
+					<a class="page-link" th:href="@{/{value}/{id} (value=${value},id=${id},page=${page.number - 1})}">前へ</a></li>
+
+					<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}"
+						th:switch="${page.number}">
+						<li th:case="${i}" class="page-item active"><a
+							class="page-link" th:text="${i + 1}"> </a></li>
+						<li th:case="*" class="page-item"><a class="page-link"
+							th:href="@{/{value}/{id} (value=${value},id=${id},page=${i})}" th:text="${i + 1}"> </a></li>
+					</th:block>
+
+					<!-- 次へ -->
+					<li th:if="${page.hasNext()}" class="page-item"><a
+						class="page-link" th:href="@{/{value}/{id} (value=${value},id=${id},page=${page.number + 1})}"> 次へ
+					</a></li>
+
+				</ul>
+			</nav>
+		</div>
+
+	</th:block>
+
+</body>
+
+</html>

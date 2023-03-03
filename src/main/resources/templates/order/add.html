@@ -1,0 +1,91 @@
+<!-- 注文発行画面 -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/base}">
+<head>
+<title>注文書作成</title>
+</head>
+
+<header>
+	<h1>header</h1>
+</header>
+
+<body>
+	<div layout:fragment="contents">
+
+		<div class="header-line">
+			<p class="header-title">注文書作成</p>
+		</div>
+
+		<form class="form-section" th:object="${orderForm}" th:action="@{/orders/create}"
+			method="POST">
+
+			
+			<table class="input-form-table">
+				<tr>
+					<th>注文番号</th>
+					<td><input type="text" th:field="*{orderNum}"/>
+					<div th:if="${#fields.hasErrors('orderNum')}" 
+						th:errors="*{orderNum}" style="color: red"></div></td>
+				</tr>
+				<tr>
+					<th>品番</th>
+					<td><input type="text" th:field="*{productForm.serialNum}" autocomplete="off" list="product"/>
+						<datalist id="product">
+							<option th:each="product :*{productList}"
+								th:value="${product.serialNum}" th:text="${product.productName}"></option>
+						</datalist>
+						<div th:if="${#fields.hasErrors('productForm.serialNum')}" 
+						th:errors="*{productForm.serialNum}" style="color: red"></div></td>
+				</tr>
+				<tr>
+					<th>注文数</th>
+					<td><input type="number" th:field="*{deliveryNum}" />
+					<div th:if="${#fields.hasErrors('deliveryNum')}" 
+							th:errors="*{deliveryNum}" style="color: red"></div></td>
+				</tr>
+				<tr>
+					<th>顧客ID</th>
+					<td><input type="text" autocomplete="off"
+						th:field="*{clientForm.clientNum}" list="client">
+						<datalist id="client">
+							<option th:each="client :*{clientList}"
+								th:value="${client.clientNum}" th:text="${client.clientName}"></option>
+						</datalist>
+						<div th:if="${#fields.hasErrors('clientForm.clientNum')}" 
+							th:errors="*{clientForm.clientNum}" style="color: red"></div></td>
+				</tr>
+				<tr>
+					<th>ステータス</th>
+					<td><input type="radio"
+						th:each="item : *{radioCompleate}" th:field="*{compleated}" th:value="${item.value}"
+						th:text="${item.key}" /></td>
+				</tr>
+				<tr>
+					<th>入出庫</th>
+					<td><input type="radio"
+						th:each="item : *{radioType}" th:field="*{type}" th:value="${item.value}" th:text="${item.key}" />
+					</td>
+				</tr>
+				<tr>
+					<th>納品日(未納品は無記入)</th>
+					<td><input type="datetime-local" th:field="*{deliveryDate}"></td>
+				</tr>
+				<tr>
+					<th>納期</th>
+					<td><input type="datetime-local" th:field="*{deadLine}"></td>
+				</tr>
+			</table>
+			
+			<div class="column-flex-end">
+				<a class="gray-btn-inline" th:href="@{/orders}">注文書一覧へ戻る</a>
+				<input type="submit" value="登録する">
+			</div>
+		</form>
+
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+DROP TABLE IF EXISTS client CASCADE;
+DROP TABLE IF EXISTS product CASCADE;
+DROP TABLE IF EXISTS order_one CASCADE;
+DROP TABLE IF EXISTS order_detail CASCADE;
+DROP TABLE IF EXISTS stock CASCADE;
+
+
+
+CREATE TABLE IF NOT EXISTS client(
+	client_id  VARCHAR(5) PRIMARY KEY,
+	client_name VARCHAR(30),
+	tel VARCHAR(9),
+	postal_code VARCHAR(7),
+	address VARCHAR(50),
+	create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS product(
+	product_id VARCHAR(5) PRIMARY KEY,
+	product_code VARCHAR(30),
+	price INTEGER DEFAULT 0,
+	disable_flg BOOLEAN DEFAULT false,
+	create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS order_one(
+	order_id VARCHAR(5) PRIMARY KEY,
+	client_id VARCHAR(5),
+	shipping_date TIMESTAMP,
+	is_complete boolean,
+	create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (client_id) REFERENCES client(client_id)
+);
+
+CREATE TABLE IF NOT EXISTS order_detail(
+	product_id VARCHAR(5),
+	order_id VARCHAR(5),
+	shipping_num INTEGER,
+	total_price INTEGER,
+	create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY(product_id,order_id),
+	FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
+CREATE TABLE IF NOT EXISTS stock(
+	stock_id VARCHAR(5) PRIMARY KEY,
+	product_id VARCHAR(5),
+	actual_num INTEGER ,
+	future_num INTEGER,
+	standard_num INTEGER,
+	create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (product_id) REFERENCES product(product_id)
+);

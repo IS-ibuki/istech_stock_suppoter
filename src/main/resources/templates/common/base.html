@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<title>タイトル</title>
+	<link rel="styleSheet" th:href="@{/css/base.css}">
+	<script th:src="@{/js/common.js}"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
+</head>
+
+<header>
+	<nav class="menu">
+		<div class="burger"onclick="toggleMenu()">
+			<div class="line"></div>
+			<div class="line"></div>
+			<div class="line"></div>
+		</div>
+			<form class="logout" th:action="@{/logout}" method="POST">
+				<input type="submit" value="ログアウト">
+			</form>
+		
+	</nav>
+	
+</header>
+
+<body>
+	<div class="popup deactive" id="popup-toggle">
+		<div class="popup-item">
+			<div class="popup-tag">在庫</div>
+			<a th:href="@{/products}"><button class="popup-link">在庫一覧</button></a>
+			<a th:href="@{/products/add}"><button class="popup-link">製品登録</button></a>
+			<a th:href="@{/products/add/bulk}"><button class="popup-link">製品一括登録</button></a>
+			<a th:href="@{/compositions/add/bulk}"><button class="popup-link">構成品一括登録</button></a>
+		</div>
+		<div class="popup-item">
+			<div class="popup-tag">注文書</div>
+			<a th:href="@{/orders}">
+			<button class="popup-link">注文一覧</button></a>
+			<a th:href="@{/orders/add}">
+			<button class="popup-link">注文書作成</button></a>
+		</div>
+		<div class="popup-item">
+			<div class="popup-tag">顧客</div>
+			<a th:href="@{/clients}">
+			<button class="popup-link">顧客一覧</button></a>
+			<a th:href="@{/clients/add}">
+			<button class="popup-link">顧客登録</button></a>
+		</div>
+	</div>
+	
+    <div layout:fragment="contents" class="main">
+    </div>
+    
+</body>
+
+</html>

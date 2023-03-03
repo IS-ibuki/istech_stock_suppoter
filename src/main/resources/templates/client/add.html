@@ -1,0 +1,48 @@
+<!-- 注文発行画面 -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+
+<head>
+	<title>顧客登録</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">顧客登録</p>
+			</div>
+			
+			<form class="form-section" th:object="${clientForm}" th:action="@{/clients/create}" method="POST">
+				
+				<table class="input-form-table">
+					
+					<tr>
+						<th>顧客ID</th>
+						<td><input type="text" th:field="*{clientNum}"/>
+						<div th:if="${#fields.hasErrors('clientNum')}" 
+							th:errors="*{clientNum}" style="color: red"></div></td>
+					</tr>
+					<tr>
+						<th>顧客名</th>
+						<td><input type="text" th:field="*{clientName}"/>
+						<div th:if="${#fields.hasErrors('clientName')}" 
+							th:errors="*{clientName}" style="color: red"></div></td>
+					
+					</tr>
+				</table>
+		
+				<div class="column-flex-end">
+					<a class="gray-btn-inline" th:href="@{/clients}">顧客一覧へ戻る</a>
+					<input type="submit" value="登録"/>
+				</div>
+			</form>
+		</div>
+		
+	</body>
+
+</html>

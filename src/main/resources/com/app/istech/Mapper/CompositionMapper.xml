@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0 EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.istech.Mapper.CompositionMapper">
+	
+	<sql id="findCompositionSelectPhrase">
+		<![CDATA[
+			SELECT
+	 			compositions.child_id,
+				compositions.parent_id,
+				compositions.quantity,
+				compositions.create_ts,
+				compositions.update_ts,
+				parent.product_id AS p_product_id,
+				parent.product_name AS p_product_name,
+				parent.price AS p_price,
+				parent.current_num AS p_current_num,
+				parent.supplier_id AS p_supplier_id,
+				parent.create_ts AS p_create_ts ,
+				parent.update_ts AS p_update_ts,
+				child.product_id AS c_product_id,
+				child.product_name AS c_product_name,
+				child.price AS c_price,
+				child.current_num AS c_current_num,
+				child.supplier_id AS c_supplier_id,
+				child.create_ts AS c_create_ts,
+				child.update_ts AS c_update_ts
+			FROM 
+				compositions
+			INNER JOIN
+				products AS parent
+			ON
+				compositions.child_id = parent.product_id
+			INNER JOIN
+				products AS child
+			ON
+				compositions.child_id = child.product_id
+		]]>
+	</sql>
+	
+	<select id="count" resultType="Long">
+		SELECT
+			COUNT(*)
+		FROM
+			compositions
+		INNER JOIN
+			products AS parent
+		ON
+			compositions.child_id = parent.product_id
+		INNER JOIN
+			products AS child
+		ON
+			compositions.child_id = child.product_id
+		INNER JOIN
+			clients AS child_supplier
+		ON
+			child.supplier_id = child_supplier.client_id
+		<where>
+			<if test="compositionSearchForm.parentId != null">
+				AND parent.product_id = #{compositionSearchForm.parentId}
+			</if>
+			<if test="compositionSearchForm.serialNum != null">
+				AND child.serial_num LIKE CONCAT (#{compositionSearchForm.serialNum},'%')
+			</if>
+			<if test="compositionSearchForm.productName != null">
+				AND child.product_name LIKE CONCAT (#{compositionSearchForm.productName},'%')
+			</if>
+			<if test="compositionSearchForm.clientNum != null">
+				AND child_supplier.client_num LIKE CONCAT (#{compositionSearchForm.clientNum},'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAll" resultMap="compositionResultMap">
+ 		SELECT
+ 			compositions.child_id
+			compositions.parent_id,
+			compositions.quantity,	
+			compositions.create_ts,
+			compositions.update_ts,
+			products.product_id,
+			products.product_name,
+			products.price,
+			products.current_num,
+			products.future_num,
+			products.create_ts,
+			products.update_ts
+		FROM 
+			compositions
+	</select>
+
+	<select id="findByParentId" resultMap="compositionResultMap">
+		<include refid="findCompositionSelectPhrase"></include>
+		WHERE
+			compositions.parent_id = #{parentId}
+	</select>
+	
+	<select id="findCompositionByProductId" resultMap="compositionResultMap">
+		with recursive temp(p_product_id,c_product_id,quantity) as (
+			select 
+				parent_id,
+				child_id,
+				quantity,
+				p1.product_id AS c_productId,
+				p1.current_num AS c_current_num,
+				p1.product_name AS c_product_name 
+			from 
+				compositions
+			inner join 
+				products as p1
+			on 
+				p1.product_id = child_id  
+			where 
+				parent_id = #{productId}
+			union all
+			select 
+				c1.parent_id,
+				c1.child_id,
+				c1.quantity ,
+				p1.product_id,
+				p1.current_num,
+				p1.product_name 
+			from temp,compositions c1
+			inner join 
+				products as p1
+			on 
+				p1.product_id = c1.child_id 
+			where 
+				c1.parent_id = temp.c_product_id
+		)
+		select * from temp;
+	</select>
+	
+	<insert id="insertComposition" parameterType="com.app.istech.Model.Composition">
+		INSERT INTO	compositions (
+			parent_id,
+			child_id,
+			quantity
+		)
+		VALUES (
+			#{parentId},		
+			#{childId},		
+			#{quantity}
+		)
+	</insert>
+	
+	
+	<insert id="bulkInsertComposition" parameterType="com.app.istech.Model.Product">
+		INSERT INTO compositions (
+			parent_id,
+			child_id,
+			quantity
+			)
+		VALUES
+		<foreach collection="compositionList" item="item" separator=",">
+			(
+			#{item.parent.productId},
+			#{item.child.productId},
+			#{item.quantity}
+			)
+		</foreach>
+	</insert>
+	
+	<update id="updateComposition" parameterType="com.app.istech.Model.Composition">
+		UPDATE
+			compositions
+		SET
+			child_id = #{composition.child.productId},
+			quantity = #{composition.quantity}
+		WHERE
+			parent_id = #{composition.parent.productId}
+		AND
+			child_id = #{previousId}
+	</update>
+	
+	<delete id="deleteComposition">
+		DELETE FROM
+			compositions
+		WHERE
+			child_id = #{childId}
+	</delete>
+	
+	<resultMap id="compositionResultMap" type="com.app.istech.Model.Composition">
+		<id property="parentId" column="parent_id"/>
+		<id property="childId" column="child_id"/>
+		<result property="quantity" column="quantity"/>
+		<result property="createTs" column="create_ts"/>
+		<result property="updateTs" column="update_ts"/>
+		<association property="parent" javaType="com.app.istech.Model.Product">
+			<id property="productId" column="p_product_id"/>
+			<result property="price" column="p_price"/>
+			<result property="productName" column="p_product_name"/>
+			<result property="currentNum" column="p_current_num"/>
+			<result property="supplierId" column="p_supplier_id"/>
+			<result property="createTs" column="p_create_ts"/>
+			<result property="updateTs" column="p_update_ts"/>
+		</association>
+		<association property="child" javaType="com.app.istech.Model.Product">
+			<id property="productId" column="c_product_id"/>
+			<result property="price" column="c_price"/>
+			<result property="productName" column="c_product_name"/>
+			<result property="currentNum" column="c_current_num"/>
+			<result property="supplierId" column="c_supplier_id"/>
+			<result property="createTs" column="c_create_ts"/>
+			<result property="updateTs" column="c_update_ts"/>
+		</association>
+	</resultMap>
+	
+</mapper>

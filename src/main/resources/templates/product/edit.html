@@ -1,0 +1,67 @@
+<!-- 製品編集画面 -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>製品編集</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">製品情報編集</p>
+			</div>
+			
+			<form class="form-section" th:object="${productForm}" th:action="@{/products/{productId}/update(productId=*{productId})}" method="POST">				
+				
+				<table class="input-form-table">
+					<tr>
+						<th>品番</th>
+						<td><input type="text" th:field="*{serialNum}"/>
+						<div th:if="${#fields.hasErrors('serialNum')}" 
+							th:errors="*{serialNum}" style="color: red"></div></td>
+					</tr>
+					<tr>
+						<th>品名</th>
+						<td><input type="text" th:field="*{productName}"/>
+						<div th:if="${#fields.hasErrors('productName')}" 
+							th:errors="*{productName}" style="color: red"></div></td>
+					</tr>
+					<tr>
+						<th>単価</th>
+						<td><input type="number" th:field="*{price}" step="0.1"/>
+						<div th:if="${#fields.hasErrors('price')}" 
+							th:errors="*{price}" style="color: red"></div></td>
+					</tr>
+					<tr>
+						<th>現在個数</th>
+						<td><input type="number" th:field="*{currentNum}"/>
+						<div th:if="${#fields.hasErrors('currentNum')}" 
+							th:errors="*{currentNum}" style="color: red"></div></td>
+					</tr>
+					<tr>
+						<th>顧客ID</th>
+						<td>
+							<input type="text" autocomplete="off" th:field="*{clientForm.clientNum}" list="key">
+							<datalist id="key">
+								<option th:each="client :*{clientList}" th:value="${client.clientNum}" th:text="${client.clientName}"></option>
+							</datalist>
+							<div th:if="${#fields.hasErrors('clientForm.clientNum')}" th:errors="*{clientForm.clientNum}" style="color: red"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="column-flex-end">
+					<a class="gray-btn-inline" th:href="@{/products/{productId}(productId=*{productId})}">製品情報へ戻る</a>
+					<input type="submit" value="登録する">
+				</div>
+				
+				
+			</form>
+		</div>
+	</body>
+</html>

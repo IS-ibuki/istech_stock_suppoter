@@ -1,0 +1,26 @@
+<!-- 在庫照会画面 -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:include="base/configHead::head(title='在庫照会画面')">
+	</head>
+	<header>
+		
+	</header>
+	<body>
+		<table>
+			<tr>
+				<th>製品コード</th>
+				<th>将来個数</th>
+				<th>基準個数</th>
+				<th>販売期間</th>
+			</tr>
+			<tr th:each="stock: ${stock}">
+				<td th:text="${stock.product.productCode}"></td>
+				<td th:text="${stock.futureNum}"></td>
+				<td th:text="${stock.standardNum}"></td>
+				<td th:text="${stock.actualNum}"></td>
+			</tr>
+		</table>
+	</body>
+</html>

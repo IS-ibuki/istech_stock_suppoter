@@ -1,0 +1,49 @@
+<!-- 顧客一覧画面 -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>注文一覧</title>
+</head>
+
+	<body>
+	
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">注文書一覧</p>
+			</div>
+			
+			<div class="section">
+			
+				<th:block th:insert="common/fragment :: searchBox(value='order')">
+				</th:block>
+				
+				<table id="orderTable" th:if="${page.totalPages > 0}">
+					<tr>
+						<th>注文番号</th>
+						<th>品番</th>
+						<th>顧客名</th>
+						<th>納品日</th>
+						<th>納品締切日</th>
+					</tr>
+					<tr th:each="order: ${page}" th:object="${order}"
+						th:classappend="*{deleted}? 'deleted'">
+						<td class="text-center tw-1"><a th:href="@{/orders/{orderId}(orderId=*{orderId})}" th:text="*{orderNum}"></a></td>
+						<td class="text-center tw-1" th:text="*{product.serialNum}"></td>
+						<td class="tw-3" th:text="*{client.clientName}"></td>
+						<td class="text-center tw-1" th:text="*{#temporals.format(deliveryDate, 'yyyy/MM/dd')}"></td>
+						<td class="text-center tw-1" th:text="*{#temporals.format(deadLine, 'yyyy/MM/dd')}"></td>
+					</tr>
+				</table>
+			
+				<th:block th:insert="common/fragment :: pagenation(value='orders')">
+				</th:block>
+				
+			</div>
+		</div>
+		
+	</body>
+</html>

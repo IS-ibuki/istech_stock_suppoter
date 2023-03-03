@@ -1,0 +1,93 @@
+<!-- 顧客一覧画面 -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>注文明細</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">注文明細</p>
+			</div>
+			
+			<div class="section">
+				<table th:object="${order}" class="order-table">
+					<tbody class="order-tbody">
+						<tr>
+							<th >注文番号</th>
+							<td class="td-num text-center" th:text="*{orderNum}"></td>
+							<th>顧客名</th>
+							<td th:text="*{client.clientName}"></td>
+							<th>注文数</th>
+							<td class="td-num text-center" th:text="*{deliveryNum}"></td>
+						</tr>
+						
+					</tbody>
+				</table>
+				
+				<table th:object="${order}" class="order-table">
+					<tbody class="order-tbody">
+						<tr>
+							<th class="tw-2">納期</th>
+							<td class="text-center" colspan="2" th:text="*{#temporals.format(deadLine, 'yyyy/MM/dd')}"></td>
+							<th>納品日</th>
+							<td class="text-center" colspan="2" th:text="*{#temporals.format(deliveryDate, 'yyyy/MM/dd')}"></td>
+						</tr>
+						<tr>
+							<th>注文作成日時</th>
+							<td class="text-center" colspan="2" th:text="*{#dates.format(createTs, 'yyyy/MM/dd')}"></td>
+							<th>最終更新日時</th>
+							<td class="text-center" colspan="2" th:text="*{#dates.format(updateTs, 'yyyy/MM/dd')}"></td>
+						</tr>					
+					</tbody>
+				</table>
+				
+				<div class="column-flex-end">
+					<a class="blue-btn-inline"
+						th:href="@{/orders/{orderId}/edit(orderId=${order.orderId})}">注文情報を編集</a>
+					<th:block th:if="${order.deleted}">
+						<a class="green-btn-inline" th:href="@{/orders/{orderId}/delete(orderId=${order.orderId})}">注文情報を表示</a>
+					</th:block>
+					<th:block th:if="${!order.deleted}">
+						<a class="red-btn-inline" th:href="@{/orders/{orderId}/delete(orderId=${order.orderId})}">注文情報を非表示</a>
+					</th:block>
+				</div>
+			</div>
+			
+			<div class="header-line">
+				<p class="header-title">注文製品情報</p>
+			</div>
+			
+			<div class="section">
+				<table th:object="${order.product}" class="parent-table">
+					<thead class="parent-thead">
+						<tr>
+							<th>親品番</th>
+							<th>親品名</th>
+							<th>現在個数</th>
+							<th>親仕入先ID</th>
+							<th>親仕入先名</th>
+						</tr>
+					</thead>
+	
+					<tbody class="parent-tbody" th:classappend="*{deleted}? 'deleted'">
+						<tr>
+							<td class="text-center detail-link">
+								<a th:href="@{/products/{productId}(productId=*{productId})}" th:text="*{serialNum}"></a></td>
+							<td class="tw-2" th:text="*{productName}"></td>
+							<td class="tw-mini text-center" th:text="*{currentNum}"></td>
+							<td class="text-center" th:text="*{client.clientNum}"></td>
+							<td class="text-center" th:text="*{client.clientName}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+	</body>
+</html>

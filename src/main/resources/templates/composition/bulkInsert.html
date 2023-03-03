@@ -1,0 +1,95 @@
+<!-- 構成品一括登録画面 -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+<head>
+	<title>構成品一括登録</title>
+</head>
+
+	<body>
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">構成品一括登録</p>
+			</div>
+			
+			<div class="section">
+				<div class="column-flex">
+						<a class="download-btn" th:href="@{/download/compositionsTable}">ここからテンプレートをダウンロード</a>
+					</div>
+				
+				<form th:object="${uploadForm}" th:action="@{/compositions/add/bulk}" method="post" enctype="multipart/form-data">
+					<input type="submit" value="ファイルをアップロード"/>
+	        		<input type="file" th:field="*{file}" th:value="*{file}"/> 
+	        		
+					<div th:if="${not #lists.isEmpty(uploadForm.productList)}" th:each="product,st : *{productList}" style="display:none">
+						<input type="hidden" th:field="*{productList[__${st.index}__].serialNum}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].productName}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].price}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].clientForm.clientNum}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].currentNum}"/>
+					</div>
+				</form>
+				
+			</div>
+			
+			<div class="header-line">
+				<p class="header-title">登録構成品リスト</p>
+			</div>
+			
+			<div class="section">
+			
+			
+				<form th:if="${not #lists.isEmpty(uploadForm.compositionList)}" th:object="${uploadForm}" th:action="@{/compositions/bulk-insert}" method="post">
+					
+					<div class="content">
+						<span>登録結果は下記の通りです。</span>
+						<span style="display:inline-block">修正した後、構成品を続けて登録する場合[次へ]、終了する場合[登録する]を押下してください。</span>
+					</div>
+					
+					<div class="column2-flex-end">
+						<input class="register" type="submit" value="製品を登録する" th:formaction="@{/compositions/bulk-insert}"/>
+					</div>
+					
+					<table>
+						<thead>
+							<tr>
+								<th>親品番</th>
+								<th>子品番</th>
+								<th>子入数</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="composition,st : *{compositionList}">
+								<td>
+									<input type="text" th:field="*{compositionList[__${st.index}__].parent.serialNum}"/>
+								</td>
+								<td>
+									<input type="text" th:field="*{compositionList[__${st.index}__].child.serialNum}"/>
+								</td>
+								<td>
+									<input type="number" th:field="*{compositionList[__${st.index}__].quantity}"/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- 
+					<div th:if="${not #lists.isEmpty(uploadForm.productList)}" th:each="product,st : *{productList}" style="display:none">
+						<input type="hidden" th:field="*{productList[__${st.index}__].serialNum}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].productName}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].currentNum}"/>
+						<input type="hidden" th:field="*{productList[__${st.index}__].client.clientNum}"/>
+					</div>
+					 -->
+					
+				</form>
+			</div>
+			
+		
+		</div>
+		
+	</body>
+</html>

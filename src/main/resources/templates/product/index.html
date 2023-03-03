@@ -1,0 +1,62 @@
+<!-- 製品一覧画面 -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+  
+<head>
+	<title>製品一覧</title>
+</head>
+
+	<body>
+
+			
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">在庫一覧</p>
+			</div>
+			
+			<div class="section">
+				
+				<div class="success" th:if="${status != null}">
+					<span class="close" th:onclick="messagesDeactive(this)"></span>
+					<span>製品の登録に成功しました</span>
+				</div>
+			
+				<th:block th:insert="common/fragment :: searchBox(value='product')">
+				</th:block>
+				
+				
+				<table th:if="${page.totalPages > 0}">
+					<tr>
+						<th>品番</th>
+						<th>品名</th>
+						<th>単価</th>
+						<th>現在庫</th>
+						<th>仕入先コード</th>
+						<th>登録日時</th>
+						<th>最終更新日</th>
+					</tr>
+					<tr th:each="product: ${page}" th:object="${product}"
+						th:classappend="*{deleted}? 'deleted'">
+						<td class="tw-1 text-center detail-link"><a th:href="@{/products/{productId}(productId=*{productId})}" th:text="*{serialNum}"></a></td>
+						<td class="tw-3" th:text="*{productName}"></td>
+						<td class="tw-mini text-center" th:text="*{price}"></td>
+						<td class="tw-mini text-center" th:text="*{currentNum}"></td>
+						<td class="tw-mini text-center" th:text="*{client.clientNum}"></td>
+						<td class="text-center" th:text="*{#dates.format(createTs, 'yyyy/MM/dd')}"></td>
+						<td class="text-center" th:text="*{#dates.format(updateTs, 'yyyy/MM/dd')}"></td>
+					</tr>
+				</table>	
+				
+				<th:block th:insert="common/fragment :: pagenation(value='products')">
+				</th:block>
+			</div>
+
+		</div>
+		
+		
+	</body>
+</html>
