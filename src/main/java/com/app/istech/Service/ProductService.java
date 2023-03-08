@@ -91,24 +91,28 @@ public class ProductService {
 		return productList;
 	}
 
-	
+	@Transactional
 	public void insertProduct(Product product) throws DuplicateKeyException{
 		productMapper.insertProduct(product);
 	}
 	
+	@Transactional
 	public void bulkInsert(List<Product> productList){
 		productMapper.bulkInsertProduct(productList);
 	}
 	
+	@Transactional
 	public void updateDeletedFlg(Product product) {
 		product.setDeleted(!product.isDeleted());
 		productMapper.updateDeletedFlg(product);
 	}
 
+	@Transactional
 	public void deleteProduct(Integer productId) {
 		productMapper.deleteProduct(productId);
 	}
 
+	@Transactional
 	public void updateProduct(Product product){
 		productMapper.updateProduct(product);
 	}
@@ -123,6 +127,7 @@ public class ProductService {
 	 * @return boolean
 	 * 
 	 */
+	@Transactional
 	public boolean updateCurrentNum(Product product,int orderType, int deliveryNum) {
 		
 		int total = 0;
@@ -151,6 +156,7 @@ public class ProductService {
 	 * 
 	 * @return boolean値
 	 */
+	@Transactional
 	public boolean updateChildCurrentNum(List<Composition> compositionList,int orderType,int deliveryNum) {
 		
 		List<Product> updateProductList = new ArrayList<Product>();
