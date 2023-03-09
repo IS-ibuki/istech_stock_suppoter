@@ -2,6 +2,8 @@ package com.app.istech.Service;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
