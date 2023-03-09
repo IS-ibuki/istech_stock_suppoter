@@ -19,7 +19,7 @@ public class ClientService {
 
 	@Autowired
 	ClientMapper clientMapper;
-
+	
 	public List<Client> findAll() {
 		return clientMapper.findAll();
 	}
@@ -50,20 +50,24 @@ public class ClientService {
 		Client client = clientMapper.findByClientNum(clientNum);
 		return client;
 	}
-
+	
+	@Transactional
 	public boolean deleteClient(Integer clientId) {
 		return clientMapper.deleteClient(clientId);
 	}
 
+	@Transactional
 	public boolean updateClient(Client client) {
 		return clientMapper.updateClient(client);
 	}
 	
+	@Transactional
 	public void updateDeletedFlg(Client client) {
 		client.setDeleted(!client.isDeleted());
 		clientMapper.updateDeletedFlg(client);
 	}
 
+	@Transactional
 	public void insertClient(Client client) throws DuplicateKeyException{
 		clientMapper.insertClient(client);
 	}
