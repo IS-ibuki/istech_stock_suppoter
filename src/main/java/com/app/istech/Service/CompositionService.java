@@ -76,6 +76,7 @@ public class CompositionService {
 	/*
 	 * 構成要素の登録
 	 */
+	@Transactional
 	public void insertComposition(Composition composition) {
 		compositionMapper.insertComposition(composition);
 	}
@@ -84,6 +85,7 @@ public class CompositionService {
 	/*
 	 * 構成要素の更新
 	 */
+	@Transactional
 	public boolean updateComposition(Composition composition,int previousId) {
 		return compositionMapper.updateComposition(composition, previousId);
 	}
@@ -92,10 +94,12 @@ public class CompositionService {
 	/*
 	 * 構成要素の削除 
 	 */
+	@Transactional
 	public boolean deleteComposition(int childId) {
 		return compositionMapper.deleteComposition(childId);
 	}
 	
+	@Transactional
 	public void bulkInsert(List<Composition> list){
 		for(Composition composition : list) {
 			
