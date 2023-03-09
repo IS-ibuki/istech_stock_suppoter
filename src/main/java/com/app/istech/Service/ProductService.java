@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.istech.Form.CompositionSearchForm;
@@ -28,20 +27,17 @@ import com.app.istech.Model.Composition;
 import com.app.istech.Model.Product;
 
 @Service
-@Transactional
 public class ProductService {
 	
-	@Autowired
 	ProductMapper productMapper;
 
-	@Autowired
 	CompositionMapper compositionMapper;
 	
 	@Autowired
-	CompositionService compositionService;
-	
-	@Autowired
-	ClientService clientService;
+	public ProductService(ProductMapper productMapper,CompositionMapper compositionMapper) {
+		this.productMapper = productMapper;
+		this.compositionMapper = compositionMapper;
+	}
 	
 	public List<Product> findAll(){
 		List<Product> productList = productMapper.findAll();

@@ -11,7 +11,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.istech.Form.CompositionForm;
@@ -22,7 +21,6 @@ import com.app.istech.Model.Composition;
 import com.app.istech.Model.Product;
 
 @Service
-@Transactional
 public class CompositionService {
 	
 	private final CompositionMapper compositionMapper;

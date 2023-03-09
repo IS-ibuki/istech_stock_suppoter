@@ -8,14 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.app.istech.Form.OrderSearchForm;
 import com.app.istech.Mapper.OrderMapper;
 import com.app.istech.Model.Order;
 
 @Service
-@Transactional
 public class OrderService {
 
 	private final OrderMapper orderMapper;
