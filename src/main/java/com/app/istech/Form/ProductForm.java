@@ -2,6 +2,7 @@ package com.app.istech.Form;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.context.annotation.SessionScope;
 
 import com.app.istech.Form.groups.CreateComposition;
 import com.app.istech.Form.groups.CreateOrder;
@@ -27,6 +29,7 @@ import lombok.Data;
 
 @Data
 @CheckUpdateProduct(id = "productId", serialNum = "serialNum",groups = {UpdateProduct.class})
+@SessionScope
 public class ProductForm implements Serializable {
 	
 	// ID
@@ -60,6 +63,15 @@ public class ProductForm implements Serializable {
 	//現在個数
 	@NotBlank(groups = {CreateProduct.class,UpdateProduct.class})
 	private String currentNum;
+	
+	// 入出庫管理ステータス
+	private HashMap<String,Integer> radioShipping;
+	
+	// 入出庫対象製品チェックボックス
+	private boolean target;
+	
+	// 入出庫数
+	private String shippingNum;
 	
 	// 作成日時
 	private Timestamp createTs;

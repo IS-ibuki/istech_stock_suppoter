@@ -31,6 +31,7 @@ import com.app.istech.Form.CompositionFormList;
 import com.app.istech.Form.CompositionSearchForm;
 import com.app.istech.Form.ProductForm;
 import com.app.istech.Form.ProductSearchForm;
+import com.app.istech.Form.ShippingForm;
 import com.app.istech.Form.UploadForm;
 import com.app.istech.Form.groups.CreateProduct;
 import com.app.istech.Form.groups.UpdateProduct;
@@ -43,7 +44,7 @@ import com.app.istech.Service.ProductService;
 
 @Controller
 @RequestMapping("/products")
-@SessionAttributes(types = {ProductSearchForm.class,CompositionForm.class,UploadForm.class})
+@SessionAttributes(types = {ProductSearchForm.class,CompositionForm.class,UploadForm.class,ProductForm.class})
 public class ProductController {
 
 	private final ProductService productService;
@@ -94,8 +95,15 @@ public class ProductController {
 		CompositionSearchForm compositionSearchForm = new CompositionSearchForm();
 		return compositionSearchForm;
 	}
-	
 
+	@ModelAttribute(value = "shippingForm")
+	public ShippingForm setUpShippingForm() {
+		ShippingForm shippingForm = new ShippingForm();
+		return shippingForm;
+	}
+	
+	
+	
 	/*
 	 *  製品マスタ一覧
 	 */
@@ -106,7 +114,48 @@ public class ProductController {
 		model.addAttribute("page",productPage);
 		return "product/index";
 	}
+	
+	/*
+	 * 入出庫管理画面
+	 */
+	@RequestMapping(path = "/shipping",method = RequestMethod.GET)
+	public String getProductShipping(Model model,@PageableDefault(size = 10) Pageable pageable,
+			@ModelAttribute("productSearchForm")ProductSearchForm productSearchForm,
+			@ModelAttribute("shippingForm") ShippingForm shippingForm) {
+		
+		// フォームリストをページネーション処理
+		Page<Product> productPage = productService.findAllBySearchForm(pageable,productSearchForm);
+		List<ProductForm> productFormList = new ArrayList<ProductForm>();
+		for(Product product : productPage.toList()) {
+			productFormList.add(new ProductForm(product));
+		}
+		
+		shippingForm.setProductFormList(productFormList);
+		model.addAttribute("shippingForm",shippingForm);
+		model.addAttribute("page",productPage);
+		return "product/shipping";
+	}
 
+	/*
+	 * 入出庫管理画面
+	 */
+	@RequestMapping(path = "/shipping",method = RequestMethod.POST)
+	public String postProductShipping(Model model,@PageableDefault(size = 20) Pageable pageable,
+			@ModelAttribute("productSearchForm")ProductSearchForm productSearchForm,
+			@ModelAttribute ShippingForm shippingForm) {
+		
+		// フォームリストをページネーション処理
+		Page<Product> productPage = productService.findAllBySearchForm(pageable,productSearchForm);
+		List<ProductForm> productFormList = new ArrayList<ProductForm>();
+		for(Product product : productPage.toList()) {
+			productFormList.add(new ProductForm(product));
+		}
+		
+		shippingForm.setProductFormList(productFormList);
+		model.addAttribute("shippingForm",shippingForm);
+		model.addAttribute("page",productPage);
+		return "product/shipping";
+	}
 	
 	/*
 	 *  製品マスタ詳細
