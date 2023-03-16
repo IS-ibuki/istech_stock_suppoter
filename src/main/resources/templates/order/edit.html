@@ -13,7 +13,7 @@
 	<div layout:fragment="contents">
 
 		<div class="header-line">
-			<p class="header-title">注文書作成</p>
+			<p class="header-title">注文書編集</p>
 		</div>
 
 		<form class="form-section" th:object="${orderForm}" th:action="@{/orders/{orderId}/update(orderId=*{orderId})}"
@@ -57,19 +57,13 @@
 							th:errors="*{clientForm.clientNum}" style="color: red"></div></td>
 				</tr>
 				<tr>
-					<th>ステータス</th>
+					<th></th>
 					<td><input type="radio"
 						th:each="item : *{radioCompleate}" th:field="*{compleated}" th:value="${item.value}"
 						th:text="${item.key}" /></td>
 				</tr>
 				<tr>
-					<th>入出庫</th>
-					<td><input type="radio"
-						th:each="item : *{radioType}" th:field="*{type}" th:value="${item.value}" th:text="${item.key}" />
-					</td>
-				</tr>
-				<tr>
-					<th>納品日(未納品は無記入)</th>
+					<th>納品日変更</th>
 					<td><input type="datetime-local" th:field="*{deliveryDate}"></td>
 				</tr>
 				<tr>

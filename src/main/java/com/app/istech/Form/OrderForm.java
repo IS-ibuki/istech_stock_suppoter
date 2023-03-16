@@ -99,8 +99,8 @@ public class OrderForm {
 	
 	private void setRadioCompleateItem() {
 		this.radioCompleate = new HashMap<String,Boolean>();
-		radioCompleate.put("未完了",false);
-		radioCompleate.put("完了",true);
+		radioCompleate.put("未納入",false);
+		radioCompleate.put("納品済",true);
 	}
 	
 	private void setRadioTypeItem() {

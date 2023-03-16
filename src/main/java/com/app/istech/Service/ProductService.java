@@ -41,6 +41,11 @@ public class ProductService {
 		this.compositionMapper = compositionMapper;
 	}
 	
+	public Long count(ProductSearchForm productSearchForm) {
+		return productMapper.count(productSearchForm);
+	}
+	
+	
 	public List<Product> findAll(){
 		List<Product> productList = productMapper.findAll();
 		return productList;
