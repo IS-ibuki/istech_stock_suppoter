@@ -26,13 +26,18 @@ public interface OrderMapper {
 	
 	Order findById(Integer orderId);
 	
+	
 	Order findByOrderNum(String orderNum);
 
+	
 	void insertOrder(Order order);
 
+	
 	boolean deleteOrder(Integer orderId);
-
+	
 	boolean updateOrder(Order order);
+	
+	boolean updateDeliveryDate(Order order);
 	
 	// 注文表示切り替え
 	boolean updateDeletedFlg(Order order);

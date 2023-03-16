@@ -75,6 +75,12 @@ public class OrderService {
 		return orderMapper.updateOrder(order);
 		
 	}
+
+	@Transactional
+	public boolean updateDeliveryDate(Order order) {
+		return orderMapper.updateDeliveryDate(order);
+		
+	}
 	
 	@Transactional
 	// 注文表示切り替え

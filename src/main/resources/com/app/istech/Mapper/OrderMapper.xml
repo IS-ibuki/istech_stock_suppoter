@@ -229,6 +229,16 @@
 			order_id = #{orderId}
 	</update>
 	
+	<update id="updateDeliveryDate" parameterType="com.app.istech.Model.Order">
+		UPDATE 
+			orders
+		SET
+			delivery_date = CURRENT_TIMESTAMP,
+			update_ts = CURRENT_TIMESTAMP
+		WHERE
+			order_id = #{orderId}
+	</update>
+
 	<update id="updateDeletedFlg" parameterType="com.app.istech.Model.Order">
 		UPDATE 
 			orders

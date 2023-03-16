@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.app.istech.Form.OrderForm;
 import com.app.istech.Form.OrderSearchForm;
@@ -63,7 +64,7 @@ public class OrderController {
 	
 	// 注文書一覧
 	@RequestMapping(path = "", method = RequestMethod.GET)
-	public String orderIndex(Model model,@PageableDefault(size = 20) Pageable pageable,
+	public String getIndex(Model model,@PageableDefault(size = 20) Pageable pageable,
 			@ModelAttribute("orderSearchForm")OrderSearchForm orderSearchForm) {
 		Page<Order> orderPage = orderService.findAll(pageable,orderSearchForm);
 		model.addAttribute("page", orderPage);
@@ -72,7 +73,7 @@ public class OrderController {
 
 	// 注文書詳細
 	@RequestMapping(path = "/{orderId}", method = RequestMethod.GET)
-	public String orderDetail(Model model,@PathVariable("orderId")Integer orderId) {
+	public String getDetail(Model model,@PathVariable("orderId")Integer orderId) {
 		Order order = orderService.findById(orderId);
 		model.addAttribute("order", order);
 		return "order/detail";
@@ -80,13 +81,13 @@ public class OrderController {
 
 	// 注文書入力
 	@RequestMapping(path = "/add", method = RequestMethod.GET)
-	public String orderAdd(Model model) {
+	public String getAdd(Model model) {
 		return "order/add";
 	}
 
 	// 注文書マスタ作成
 	@RequestMapping(path = "/create", method = RequestMethod.POST)
-	public String orderCreate(@ModelAttribute("orderForm")@Validated({CreateOrder.class}) OrderForm orderForm
+	public String postCreate(@ModelAttribute("orderForm")@Validated({CreateOrder.class}) OrderForm orderForm
 			,BindingResult result) {
 		
 		if(result.hasErrors()) {
@@ -121,7 +122,7 @@ public class OrderController {
 
 	// 注文書更新処理
 	@RequestMapping(path = "/{orderId}/update", method = RequestMethod.POST)
-	public String orderUpdate(@ModelAttribute @Validated({UpdateOrder.class})OrderForm orderForm,
+	public String postUpdate(@ModelAttribute @Validated({UpdateOrder.class})OrderForm orderForm,
 			@PathVariable Integer orderId,BindingResult result) {
 		
 		if(result.hasErrors()) {
@@ -170,10 +171,17 @@ public class OrderController {
 				
 		return "redirect:/orders/" + orderId;
 	}
+	
+	@RequestMapping(path = "/{orderId}/update/create-ts")
+	public String postUpdateCreateTs(@PathVariable("orderId")Integer orderId,@RequestParam(required=true) boolean isCompleated) {
+		Order order = orderService.findById(orderId);
+		orderService.updateDeliveryDate(order);
+		return "redirect:/orders/" + orderId;
+	}
 
 	// 注文書編集画面
 	@RequestMapping(path = "/{orderId}/edit", method = RequestMethod.GET)
-	public String orderEdit(Model model, @PathVariable("orderId")Integer orderId) {
+	public String getEdit(Model model, @PathVariable("orderId")Integer orderId) {
 		
 		Order order = orderService.findById(orderId);
 		OrderForm orderForm = new OrderForm(order);
@@ -188,15 +196,16 @@ public class OrderController {
 	}
 	
 	// 顧客マスタ一時削除処理
-	@RequestMapping(path = "/{orderId}/delete", method = RequestMethod.GET)
-	public String orderDelete(Model model, @PathVariable("orderId") Integer orderId) {
+	@RequestMapping(path = "/{orderId}/delete", method = RequestMethod.POST)
+	public String postDelete(Model model, @PathVariable("orderId") Integer orderId) {
 		Order order = orderService.findById(orderId);
+		// 削除済みフラグ更新
 		orderService.updateDeletedFlg(order);
 		return "redirect:/orders/" + order.getOrderId();
 	}
 
-	// 注文書削除処理
-	@RequestMapping(path = "/{orderId}/parmanent-delete", method = RequestMethod.GET)
+	// 注文書完全削除処理
+	@RequestMapping(path = "/{orderId}/parmanent-delete", method = RequestMethod.DELETE)
 	public String orderPermanentDelete(Model Model, @PathVariable("orderId") Integer orderId) {
 		orderService.deleteOrder(orderId);
 		return "redirect:/orders";

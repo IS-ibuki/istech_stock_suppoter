@@ -44,7 +44,7 @@ import com.app.istech.Service.ProductService;
 
 @Controller
 @RequestMapping("/products")
-@SessionAttributes(types = {ProductSearchForm.class,CompositionForm.class,UploadForm.class,ProductForm.class})
+@SessionAttributes(types = {ProductSearchForm.class,CompositionForm.class,ProductForm.class})
 public class ProductController {
 
 	private final ProductService productService;

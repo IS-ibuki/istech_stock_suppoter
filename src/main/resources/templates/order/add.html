@@ -64,14 +64,10 @@
 						th:text="${item.key}" /></td>
 				</tr>
 				<tr>
-					<th>入出庫</th>
+					<th>納品</th>
 					<td><input type="radio"
 						th:each="item : *{radioType}" th:field="*{type}" th:value="${item.value}" th:text="${item.key}" />
 					</td>
-				</tr>
-				<tr>
-					<th>納品日(未納品は無記入)</th>
-					<td><input type="datetime-local" th:field="*{deliveryDate}"></td>
 				</tr>
 				<tr>
 					<th>納期</th>

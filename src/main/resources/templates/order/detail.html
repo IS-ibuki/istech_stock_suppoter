@@ -29,23 +29,33 @@
 						
 					</tbody>
 				</table>
-				
-				<table th:object="${order}" class="order-table">
-					<tbody class="order-tbody">
-						<tr>
-							<th class="tw-2">納期</th>
-							<td class="text-center" colspan="2" th:text="*{#temporals.format(deadLine, 'yyyy/MM/dd')}"></td>
-							<th>納品日</th>
-							<td class="text-center" colspan="2" th:text="*{#temporals.format(deliveryDate, 'yyyy/MM/dd')}"></td>
-						</tr>
-						<tr>
-							<th>注文作成日時</th>
-							<td class="text-center" colspan="2" th:text="*{#dates.format(createTs, 'yyyy/MM/dd')}"></td>
-							<th>最終更新日時</th>
-							<td class="text-center" colspan="2" th:text="*{#dates.format(updateTs, 'yyyy/MM/dd')}"></td>
-						</tr>					
-					</tbody>
-				</table>
+					<table th:object="${order}" class="order-table">
+						<tbody class="order-tbody">
+							<tr>
+								<th class="tw-2">納期</th>
+								<td class="text-center" colspan="2" th:text="*{#temporals.format(deadLine, 'yyyy/MM/dd')}"></td>
+								<th>納品日</th>
+								<th:block th:if="*{deliveryDate != null}">
+									<td class="text-center" colspan="2" 
+										th:text="*{#temporals.format(deliveryDate, 'yyyy/MM/dd')}"></td>
+								</th:block>
+								<th:block th:if="*{deliveryDate == null}">
+									<td class="text-center" colspan="2" >
+										<form th:action="@{/orders/{orderId}/update/create-ts(orderId = *{orderId})}">
+											<input type="checkbox" name="isCompleated" th:id="isCompleated"/>
+											<input type="submit" th:value="納品を完了する" id="compleateOrderBtn" disabled="disabled" />
+										</form>
+									</td>								
+								</th:block>
+							</tr>
+							<tr>
+								<th>注文作成日時</th>
+								<td class="text-center" colspan="2" th:text="*{#dates.format(createTs, 'yyyy/MM/dd')}"></td>							
+								<th>最終更新日時</th>
+								<td class="text-center" colspan="2" th:text="*{#dates.format(updateTs, 'yyyy/MM/dd')}"></td>
+							</tr>					
+						</tbody>
+					</table>				
 				
 				<div class="column-flex-end">
 					<a class="blue-btn-inline"
@@ -87,6 +97,23 @@
 					</tbody>
 				</table>
 			</div>
+			
+			<script>
+				const compleateOrderBtn = document.getElementById('compleateOrderBtn');
+				const isCompleated = document.getElementById('isCompleated');
+				
+				isCompleated.addEventListener('change', () => {
+					if(compleateOrderBtn.disabled === true){
+						// disable属性削除
+					    compleateOrderBtn.removeAttribute("disabled"); 							
+					}else{
+						// disable属性設定
+					    compleateOrderBtn.setAttribute("disabled",true); 													
+					}
+					
+				})
+			</script>
+			
 		</div>
 		
 	</body>
