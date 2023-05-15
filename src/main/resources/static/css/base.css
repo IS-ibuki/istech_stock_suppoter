@@ -1,3 +1,17 @@
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0);
+}
+
 body {
 	margin: 0;
 }
@@ -58,7 +72,7 @@ header {
 }
 
 .main {
-	margin-top: 50px;
+	margin-top: 60px;
 	margin-bottom: 50px;
 	margin-left: 10px;
 	margin-right: 10px;
@@ -67,9 +81,10 @@ header {
 
 .menu {
 	display: flex;
-	height: 40px;
+	height: 5vh;
 	background-color: #008080;
 	opacity: 1;
+	box-shadow: 1px 1px 3px;
 }
 
 .menu .burger {
@@ -82,11 +97,16 @@ header {
 	width: 5%;
 }
 
-.menu .burger div {
+.menu .burger .line {
 	background-color: white;
-	margin-bottom: 2px;
-	width: 15px;
-	height: 3px;
+	margin-bottom: 4px;
+	width: 22px;
+	height: 2px;
+}
+
+.menu .burger:hover .line {
+	background-color: white;
+	box-shadow: 0 2px 2px white;
 }
 
 .active {
@@ -377,6 +397,171 @@ td a{
 	display: flex;
 }
 
+.sideber{
+	position:fixed;
+	top:0;
+	height:100vh;
+	width:70%;
+	left:0;
+	background-color: #008080;
+	z-index: 10;
+	transform: translateX(-100%);
+	transition:transform 0.3s;
+	box-shadow: 1px 1px 2px black;
+	overflow: auto;
+}
+
+.sideber.sideber-active{
+	transform: translateX(0%);
+}
+
+.sideber-close {
+	position:relative;
+	display:flex;
+	flex-direction: column;
+	height: 6vh;
+}
+
+.sideber-close-text {
+	position: absolute;
+    color:white;
+    top: 5vh;
+    left: 1vh;
+    font-size: 0.7em;
+}
+
+.sideber-close-btn {
+	position:absolute;
+	padding:20px 25px;
+}
+
+.sideber-close-btn:hover:before{
+	box-shadow: 1px 1px 1px white;
+}
+
+.sideber-close-btn:hover:after{
+	box-shadow: 1px 1px 1px white;
+}
+
+.sideber-close-btn:before {
+	content: '';
+	background:white;
+	width:32px;
+	height:1.5px;
+	left:1vh;
+	transform:rotate(45deg);
+	position:absolute;
+}
+
+.sideber-close-btn:after {
+	content: '';
+	background:white;
+	width:32px;
+	height:1.5px;
+	left:1vh;
+	transform:rotate(-45deg);
+	position:absolute;
+}
+
+
+.content-wrapper{
+	display: flex;
+	align-items: center;
+}
+
+.inequality-sign-wrapper{
+	background-color: green;
+    display: block;
+    width: 53px;
+    height: 50px;
+    position: relative;
+}
+
+.inequality-sign-img{
+	width: 50px;
+    height: 25px;
+    position: absolute;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transition:transform 0.3s;
+    top: 50%;
+    left: 50%;
+}
+
+.inequality-sign-img.is-open{
+	transform: translate(-50%, -50%) rotate(90deg);
+	transition:transform 0.3s;
+}
+
+.inequality-sign-img-black{
+	width: 24px;
+    height: 16px;
+    position: absolute;
+    top: 50%;
+    left: 95%;
+    transform: translate(-50%, -50%);
+}
+
+.content-group {
+	opacity: 0;
+	visibility: hidden;
+    transition: height 0.3s;
+    height:0;
+}
+
+.content-group li{
+	padding:6px 16px;
+	border-top:1px solid black;
+    line-height: 2em;
+    position: relative;
+    display: flex;
+}
+
+.content-group li:hover{
+	background-color: gray;
+}
+
+
+.content-group.is-open{
+	display: block;
+	background-color: white;
+	color: black;
+    text-align: left;
+    padding:0px;
+    visibility: visible;
+    opacity:1;
+    border-bottom: none;
+}
+
+.sideber-content-list{
+	color:white;
+	text-align: center;
+	padding:10px 0px;
+}
+
+.sideber-content-item{
+	display:flex;
+	flex-direction: column;
+	border-top: 1px solid;
+	width: 100%;
+	position:relative;
+}
+
+.sideber-content-item:last-child{
+	border-bottom: 1px solid;
+}
+
+.sideber-content-item-header{
+	margin-right:auto;
+	padding-left:32px;	
+	font-size:1.2em;
+}
+
+.sideber-content-item-img{
+	position:absolute;
+	width:30px;
+	height:22px;
+}
+
 .popup {
 	border: solid;
 	position: fixed;
@@ -411,6 +596,18 @@ td a{
 	flex-flow: column;
 	margin: 5px 0;
 	width: 100%;
+}
+
+.popup-dropdown-btn {
+	
+}
+
+.popup-dropdown-btn:before {
+	
+}
+
+.popup-dropdown-btn:after {
+	
 }
 
 .popup-link {
@@ -806,6 +1003,12 @@ td a{
 	.search-box .search-form input[type="text"] {
 		max-width: 300px;
 	}
+	
+	.sideber{
+		width:30%;
+	}
+	
+	
 	.red-btn-inline {
 		margin-left: 5px;
 		margin-bottom:0;

@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @SessionScope
 public class ShippingForm {
 	
-	List<ProductForm> productFormList;
+	List<ProductForm> shippingProductList;
 	
 }

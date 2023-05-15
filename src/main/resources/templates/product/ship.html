@@ -1,0 +1,92 @@
+<!-- 入出庫管理画面 -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{common/base}">
+  
+<head>
+	<title>入出庫管理</title>
+</head>
+
+	<body>
+
+			
+		<div layout:fragment="contents">
+			
+			<div class="header-line">
+				<p class="header-title">入出庫管理</p>
+			</div>
+			
+			<div class="section">
+				
+				<div class="success" th:if="${status != null}">
+					<span class="close" th:onclick="messagesDeactive(this)"></span>
+					<span>製品の登録に成功しました</span>
+				</div>
+			
+				<div class="search-box">
+					<a class="add-btn" th:href="@{/products/add}">＋ 製品を登録する</a>			
+					<form class="search-form" th:action="@{/products/shipping}" th:object="${productSearchForm}">
+						<div class="search-form-wrapper">
+							<span class="search-form-item">
+								<label>品番</label>
+								<input type="text" th:field="*{serialNum}" placeholder="品番を入力"></input>
+							</span>
+							<span class="search-form-item">
+								<label>品名</label>
+								<input type="text" th:field="*{productName}" placeholder="品名を入力"></input>
+							</span>
+						</div>
+						<div class="search-form-wrapper">
+							<span class="search-form-item">
+								<label>仕入先コード</label>
+								<input type="text" th:field="*{clientNum}" placeholder="仕入先コードを入力"></input>
+							</span>
+							<div class="select-item">
+								<select th:field="*{sortValue}">
+									<option th:each="item:*{sortItems}" th:value="${item.value}"
+									 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+								</select>
+								<select th:field="*{orderValue}">
+									<option th:each="item:*{orderItems}" th:value="${item.value}"
+									 th:selected="${item.value == selectedValue}" th:text="${item.key}"></option>
+								</select>
+								<input type="submit" value="検索" />
+							</div>
+						</div>
+					</form>			
+				</div>
+				
+				
+				<form th:action="@{/products/shipping}" th:object="${shippingForm}">
+					<table>
+						<tr>
+							<th>品番</th>
+							<th>品名</th>
+							<th>単価</th>
+							<th>現在庫</th>
+							<th>仕入先コード</th>
+							<th></th>
+						</tr>
+						<tr th:each="product,st: *{shippingProductList}">
+							<td th:text="*{productFormList[__${st.index}__].serialNum}"></td>
+							<td th:text="*{productFormList[__${st.index}__].productName}"></td>
+							<td th:text="*{productFormList[__${st.index}__].price}"></td>
+							<td th:text="*{productFormList[__${st.index}__].currentNum}"></td>
+							<td th:text="*{productFormList[__${st.index}__].clientForm.clientNum}"></td>
+							<td>
+								<input type="checkbox" th:field="*{productFormList[__${st.index}__].target}" checked/>
+							</td>
+						</tr>
+					</table>	
+							
+				</form>
+				
+			</div>
+			
+		</div>
+		
+		
+	</body>
+</html>

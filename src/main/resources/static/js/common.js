@@ -1,4 +1,90 @@
 
+document.addEventListener('DOMContentLoaded', function(){
+	
+	//サイドバーからのページ遷移を処理する関数
+	function movePage(){
+		const item = this;
+		switch(item.id){
+			case 'product-index':
+				window.location.href = "/products";
+				brack;
+			case 'product-add':
+				window.location.href = "/products/add";
+				brack;
+			case 'product-bulkinsert':
+				window.location.href = "/products/add/bulk";
+				brack;
+			case 'composition-bulkinsert':
+				window.location.href = "/compositions/add/bulk";
+				brack;
+			case 'product-shipping':
+				window.location.href = "/products/ship/choice";
+				brack;
+			case 'order-index':
+				window.location.href = "/orders";
+				brack;
+			case 'order-add':
+				window.location.href = "/orders/add";
+				brack;
+			case 'client-index':
+				window.location.href = "/clients";
+				brack;
+			case 'client-add':
+				window.location.href = "/clients/add";
+				brack;
+		}
+	}
+	
+	function displayContentChild(){
+		//class = content-groupの要素を取得
+		const childContent= this.nextElementSibling;
+		childContent.classList.toggle("is-open");
+		const childCount = childContent.childElementCount;
+		const childHeight = childContent.firstElementChild.offsetHeight;
+		//アコーディオンメニューの高さを決定
+		if(childContent.classList.contains("is-open")){
+			childContent.style.height = childCount * childHeight + 'px';
+		}else{
+			childContent.style.height = '0px';
+		}
+				
+		const els = this.lastElementChild.lastElementChild;
+		els.classList.toggle("is-open");
+	}
+	
+	const sideberOpenBtn = document.querySelectorAll(".content-wrapper");
+	sideberOpenBtn.forEach(element => {
+		element.addEventListener("click", displayContentChild);
+	});
+	
+	const sideberContentItem = document.querySelectorAll(".content-group-item");
+	sideberContentItem.forEach(element => {
+		element.addEventListener("click", movePage);
+	});
+	
+	document.querySelector("#bbb").checked = true;;
+	
+	
+	const ss=sessionStorage;
+	for(let i=0;i<ss.length;i++){
+	    const n=ss.key(i);
+	    const v=ss.getItem(ss.key(i));
+	    console.log([n,v]);
+	   document.querySelector(`[name="${n}"][value="${v}"]`).checked=true;
+ 	}
+	
+});
+
+
+
+//サイドバー表示切替
+function toggleSideber(){
+	const sideberBtn = document.getElementById("sideber-id");
+	sideberBtn.classList.toggle("sideber-active");
+
+}
+
+
 //メニュー要素の表示切り替え
 function toggleMenu(){
 	const toggle = document.getElementById("popup-toggle");

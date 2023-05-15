@@ -12,7 +12,7 @@
 
 <header>
 	<nav class="menu">
-		<div class="burger"onclick="toggleMenu()">
+		<div class="burger" onclick="toggleSideber()">
 			<div class="line"></div>
 			<div class="line"></div>
 			<div class="line"></div>
@@ -26,28 +26,71 @@
 </header>
 
 <body>
-	<div class="popup deactive" id="popup-toggle">
-		<div class="popup-item">
-			<div class="popup-tag">在庫</div>
-			<a th:href="@{/products}"><button class="popup-link">在庫一覧</button></a>
-			<a th:href="@{/products/add}"><button class="popup-link">製品登録</button></a>
-			<a th:href="@{/products/add/bulk}"><button class="popup-link">製品一括登録</button></a>
-			<a th:href="@{/compositions/add/bulk}"><button class="popup-link">構成品一括登録</button></a>
-			<a th:href="@{/products/shipping}"><button class="popup-link">入出庫管理</button></a>
+	<div class="sideber" id="sideber-id">
+		<div class="sideber-close">
+			<div  onclick="toggleSideber()" class="sideber-close-btn"></div>
+			<span class="sideber-close-text">閉じる</span>
 		</div>
-		<div class="popup-item">
-			<div class="popup-tag">注文書</div>
-			<a th:href="@{/orders}">
-			<button class="popup-link">注文一覧</button></a>
-			<a th:href="@{/orders/add}">
-			<button class="popup-link">注文書作成</button></a>
-		</div>
-		<div class="popup-item">
-			<div class="popup-tag">顧客</div>
-			<a th:href="@{/clients}">
-			<button class="popup-link">顧客一覧</button></a>
-			<a th:href="@{/clients/add}">
-			<button class="popup-link">顧客登録</button></a>
+		<div class="sideber-content">
+			<ul class="sideber-content-list">
+				<li class="sideber-content-item">
+					<div class="content-wrapper">
+						<img th:src="@{/img/inventory_white.svg}" class="sideber-content-item-img" />
+						<div class="sideber-content-item-header">
+							在庫情報
+						</div>
+						<div class="inequality-sign-wrapper" id="id1">
+							<img th:src="@{/img/inequality_sign.svg}" class="inequality-sign-img" />
+						</div>
+					</div>
+					<ul class="content-group">
+						<li class="content-group-item" id="product-index">在庫一覧
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black"/></li>
+						<li class="content-group-item" id="product-add">製品登録
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+						<li class="content-group-item" id="product-bulkinsert">製品一括登録
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+						<li class="content-group-item" id="composition-bulkinsert">構成品一括登録
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+						<li class="content-group-item" id="product-shipping">入出庫管理
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+					</ul>
+				</li>
+				<li class="sideber-content-item">
+					<div class="content-wrapper">
+						<img th:src="@{/img/order_document_white.svg}" class="sideber-content-item-img" />
+						<div class="sideber-content-item-header">
+							注文書情報
+						</div>
+						<div class="inequality-sign-wrapper" id="id1">
+							<img th:src="@{/img/inequality_sign.svg}" class="inequality-sign-img" />
+						</div>
+					</div>
+					<ul class="content-group">
+						<li class="content-group-item" id="order-index">注文書一覧
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black"/></li>
+						<li class="content-group-item" id="order-add">注文書作成
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+					</ul>
+				</li>
+				<li class="sideber-content-item">
+					<div class="content-wrapper">
+						<img th:src="@{/img/person_white.svg}" class="sideber-content-item-img" />
+						<div class="sideber-content-item-header">
+							顧客情報
+						</div>
+						<div class="inequality-sign-wrapper" id="id1">
+							<img th:src="@{/img/inequality_sign.svg}" class="inequality-sign-img" />
+						</div>
+					</div>
+					<ul class="content-group">
+						<li class="content-group-item" id="client-index">顧客一覧
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black"/></li>
+						<li class="content-group-item" id="client-add">顧客登録
+						<img th:src="@{/img/inequality_sign_black.svg}" class="inequality-sign-img-black" /></li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 	</div>
 	
